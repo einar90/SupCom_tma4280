@@ -1,0 +1,56 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc} % ----------------| More characters.
+\usepackage[latin1]{inputenc} % -----------| Direct use of scandinavian letters.
+%\usepackage{droid} % ----------------------| Use the Droid serif font.
+\usepackage[defaultsans]{opensans} % ------| Use the Open Sans font.
+\usepackage{bera} % -----------------------| Use Bera serif font.
+\usepackage{float} % ----------------------| More options for floats.
+\usepackage{graphicx} % -------------------| Support more image formats.
+\usepackage{booktabs} % -------------------| Better-looking tables.
+\usepackage{subfig} % ---------------------| Subfigures.
+\usepackage[a4paper]{geometry} % ----------| Adjusting page margins.
+\usepackage{amsmath} % --------------------| Various math, including eqref.
+
+% XY-pic. Used for "programming" illustrations.
+\input xy
+\xyoption{all}
+
+% Styling captions.
+\usepackage{caption}
+\captionsetup{margin=10pt,font=small,labelfont=bf}
+
+% Changing section header fonts.
+\usepackage{sectsty}
+\allsectionsfont{\normalfont\sffamily}
+
+% Listings settings
+\usepackage{listings} % -------------------| Used for source code listings.
+\usepackage{color} % ----------------------| Allows defn. of custom colors.
+\definecolor{gray}{RGB}{100,100,100}  % ---|Color for line-numbers.
+\definecolor{light-gray}{RGB}{250,250,250} % Background color for listings.
+\lstset{
+  language={C}, % --------------------| The language of the code.
+  aboveskip=0em, % -------------------| Skip above listing box.
+  belowskip=3em, % -------------------| Skip below listing box.
+  basicstyle=\ttfamily\scriptsize, % -| Default font style.
+  backgroundcolor=\color{light-gray}, % Background color.
+  frame=single, % --------------------| Adds a frame around the code.
+  rulecolor=\color{black}, % ---------| Frame color.
+  captionpos=t, % --------------------| Sets the caption-position to bottom.
+  breaklines=true, % -----------------| Sets automatic line breaking.
+  breakatwhitespace=false, % ---------| Automatic breaks only at whitespace?.
+  keepspaces=true, % -----------------| Keeps spaces in text.
+  tabsize=4, % -----------------------| Sets default tabsize to 2 spaces.
+  commentstyle=\color{green}, % ------| Comment style.
+  keywordstyle=\color{blue}, %--------| Keyword style.
+  stringstyle=\color{red}, % ---------| String literal style.
+  numbers=left, % --------------------| Line-number position: none/left/right.
+  numbersep=5pt, % -------------------| Distance between line-numbers and code.
+  numberstyle=\tiny\color{gray}, % ---| The style that used for line-numbers.
+  stepnumber=2, %---------------------| Step between two line-numbers..
+  showspaces=false, % ----------------| Show spaces with underscores.
+  showtabs=false, % ------------------| Show tabs with underscores.
+  showstringspaces=false, % ----------| Underline spaces within strings.
+  escapeinside={\%*}{*)}, % ----------| For adding LaTeX within code.
+  title=\lstname % -------------------| Show the filename of included file.
+}

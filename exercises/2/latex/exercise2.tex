@@ -5,5 +5,38 @@
 \author{Einar Baumann}
 \maketitle
 
+\section{Exercise 1: Processor data caches} % (fold)
+\label{sec:exercise_1}
+\begin{quotation}{\itshape
+  The previous supercomputer at NTNU, \texttt{njord}, was based on the POWER5 dual-core chip. The two processors on a single chip each had a private L1 data cache of size 32 kB (kilobytes), a shared L2 cache of size 1.875 MB (megabytes), and an off-chip L3 cache of size 36 MB. Assume that we need to store floating point numbers in double precision. 
+
+  \begin{itemize}
+    \item How many floating point numbers can fit in each of the caches?
+    \item What is the dimension of the largest square matrix that we can fit in each cache? Compare this with Exercise 6  in Problem Set 1.
+  \end{itemize}
+}\end{quotation}
+
+The number of double precision (64-bit, or 8-byte) floats that can fit in a cache is given by the size of the cache in bytes divided by 8.
+
+The size of an $n$-dimensional matrix is given by $n^2$, so the largest $n$ that can fit in each cache is given by the square root of the maximum number of floats the cache can fit.
+
+\begin{center}
+  \begin{tabular}{llll}
+  \toprule 
+  \textsc{Chache} & \textsc{Size} & \# \textsc{64-bit floats} & $n_{max}$  \\
+  \midrule
+  L1 & 32 kB    & $4,000$     & $63$ \\
+  L2 & 1.875 MB & $234,375$   & $484$ \\
+  L3 & 36 MB    & $4,500,000$ & $2121$ \\
+  \bottomrule
+  \end{tabular}
+\end{center}
+% section exercise_1 (end)
+
+
+\section{Exercise 2: Communication within circuits} % (fold)
+\label{sec:exercise_2}
+
+% section exercise_2 (end)
 
 \end{document}

@@ -1,0 +1,43 @@
+%******************************************************************************
+% Custom environment definitions. 
+% REQUIRES the `color' package.
+%******************************************************************************
+
+\usepackage[amsmath,thmmarks,framed]{ntheorem}
+\usepackage{framed}
+\definecolor{env-gray}{rgb}{0.6,0.6,0.6}
+
+% Examples environment
+\theoremstyle{break}
+\theoremframepreskip{1.5em}
+\theoremframepostskip{1.5em}
+\newframedtheorem{example}{\protect\examplename}[section]
+
+% Remarks environment
+\theoremstyle{plain}
+\theorempreskip{1.5em}
+\theorempostskip{1.5em}
+\newtheorem{rem}{\protect\remarkname}[section]
+
+% Definitions environment
+\theoremstyle{plain}
+\theoremframepreskip{1.5em}
+\theoremframepostskip{1.5em}
+\newframedtheorem{defn}{\protect\definitionname}
+
+
+%---------------------------------
+% Translations
+%---------------------------------
+\addto\captionsenglish{\renewcommand{\corollaryname}{Corollary}}
+\addto\captionsenglish{\renewcommand{\definitionname}{Definition}}
+\addto\captionsenglish{\renewcommand{\examplename}{Example}}
+\addto\captionsenglish{\renewcommand{\remarkname}{Remark}}
+\addto\captionsnorsk{\renewcommand{\corollaryname}{Korollar}}
+\addto\captionsnorsk{\renewcommand{\definitionname}{Definisjon}}
+\addto\captionsnorsk{\renewcommand{\examplename}{Eksempel}}
+\addto\captionsnorsk{\renewcommand{\remarkname}{Merknad}}
+\providecommand{\corollaryname}{Korollar}
+\providecommand{\definitionname}{Definisjon}
+\providecommand{\examplename}{Eksempel}
+\providecommand{\remarkname}{Merknad}

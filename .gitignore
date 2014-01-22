@@ -32,6 +32,7 @@
 *.tdo
 *.fls
 *.pdf
+*.thm
 
 # Output files
 *.dat

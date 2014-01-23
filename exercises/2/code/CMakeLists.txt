@@ -1,0 +1,6 @@
+project(matops)
+enable_language(C)
+cmake_minimum_required(VERSION 2.6)
+set(CMAKE_C_FLAGS "-std=c99") 
+set(SRCS matops.c)
+add_executable(matops.out ${SRCS})

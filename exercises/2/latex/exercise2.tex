@@ -1,4 +1,6 @@
 \input{../../common/preamble.tex}
+\input{../../common/preamble-custom-environments.tex}
+\input{../../common/preamble-listings.tex}
 
 \begin{document}
 \title{Supercomputers -- Problem set 2}
@@ -7,14 +9,15 @@
 
 \section{Exercise 1: Processor data caches} % (fold)
 \label{sec:exercise_1}
-\begin{quotation}{\itshape
+\begin{question}
   The previous supercomputer at NTNU, \texttt{njord}, was based on the POWER5 dual-core chip. The two processors on a single chip each had a private L1 data cache of size 32 kB (kilobytes), a shared L2 cache of size 1.875 MB (megabytes), and an off-chip L3 cache of size 36 MB. Assume that we need to store floating point numbers in double precision. 
 
   \begin{itemize}
     \item How many floating point numbers can fit in each of the caches?
     \item What is the dimension of the largest square matrix that we can fit in each cache? Compare this with Exercise 6  in Problem Set 1.
   \end{itemize}
-}\end{quotation}
+\end{question}
+
 
 The number of double precision (64-bit, or 8-byte) floats that can fit in a cache is given by the size of the cache in bytes divided by 8.
 
@@ -31,12 +34,135 @@ The size of an $n$-dimensional matrix is given by $n^2$, so the largest $n$ that
   \bottomrule
   \end{tabular}
 \end{center}
+\pagebreak
 % section exercise_1 (end)
 
 
 \section{Exercise 2: Communication within circuits} % (fold)
 \label{sec:exercise_2}
+\begin{question}
+  \begin{itemize}
+    \item What limits are there to the speed of electronic circuits?
+    \item What is the maximum distance a memory unit could be from an arithmetic unit and still make a 100-picosecond memory access time conceivable?
+  \end{itemize}
+\end{question}
 
+The speed of light limits the speed of electronic circuits.
+
+The maximum distance a memory unit could be from an arithmetic unit and still make a 100 picosecond memory access time is
+\begin{equation}
+  \frac{2d}{3\cdot 10^8 \mathrm{\frac{m}{s}}} = 100\cdot 10^{-12} \mathrm{s}
+  \implies d =\frac{1}{2} \cdot 100 \cdot 10^{-12} \cdot 3\cdot 10^8 \mathrm{\frac{m}{s}} = 1.5 \mathrm{cm}
+\end{equation}
+\pagebreak
 % section exercise_2 (end)
+
+
+\section{Exercise 3: Algorithm variations} % (fold)
+\label{sec:exercise_3_algorithm_variations}
+\begin{question}
+  Assume that we have a scalar $c$ and two vectors $\underline{a}$ and $\underline{b}$ of length $n$. We consider three types of linear algebra operations:
+  \begin{enumerate}
+    \item Add the constant $c$ to all the elements in $\underline{a}$;
+    \item Add the vectors $\underline{a}$ and $\underline{b}$ and store the result in $\underline{a}$;
+    \item Multiply all the elements in the vector $\underline{b}$ with the constant $c$ and add $\underline{a}$ to the resulting vector. Store the final result in $\underline{a}$.
+  \end{enumerate}
+
+  \textbf{(a)} Why does the speed of computation increase with $n$ for smaller vector lengths, followed by a performance which is fairly independent of $n$? Why is there a sudden drop in performance for a certain vector length? This drop was observed to happen for $n>4096$ for operation 2 and 3, while the drop was observed for $n>8192$ for operation 1. Why does this drop happen earlier for operation 2 and 3 compared to for operation 1? Why is the speed for operation 3 higher than for operation 1? Why is the speed for operation 2 lower than for operation 1?
+
+  \textbf{(b)} Why is it important to be aware of the memory hierarchy on modern computers when implementing numerical algorithms for scientific and technical computing?
+\end{question}
+
+\textbf{(a)} The first part of the speedup is caused by the pipeline is filled up. After that the speed of computation increases with $n$ for increasing vector lengths because the overhead caused by transferring data between the computation nodes are becoming decreasingly significant compared to the speedup gained by distributing the workload.
+
+The sudden drop in performance occurs because the data set is too large to fit in the registers/cache, forcing the machine to read it from slower types of memory (e.g. RAM). The drop happens earlier for operation 2 and 3 than for operation 1 because operation 1 only works on one array of size $n$ and one constant; while both 2 and 3 operate on two arrays of size $n$;
+
+The speed is higher for operation 3 than for operation 1 because the processors can perform one multiply-add operation per ``tick'', meaning it can perform two FLOPs per tick. Operation 3 uses this, operation 1 does not. The speed for operation 2 is lower than operation 1 because operation 2 with its two arrays requires more memory accesses than operation 1 with its one array and one constant.
+
+\noindent\textbf{(b)} It is important to be aware of the memory hierarchy on modern computers when implementing numerical algorithms for scientific computing because the various levels in the memory hierarchy are of different sizes and have different access times. Good reuse of data, and accessing array-elements close to each other is therefore important to keep accesses to data further down in the memory hierarchy to a minimum.
+\pagebreak
+% section exercise_3_algorithm_variations (end)
+
+\section{Exercise 4: Vector operations} % (fold)
+\label{sec:exercise_4_vector_operations}
+\begin{question}
+  Consider the vector operation 
+\begin{align*}
+\underline{c} = \underline{a} + \underline{b},
+\end{align*}
+where $\underline{a}$, $\underline{b}$, and $\underline{c}$ 
+are vectors of length $n$. One way to implement this operation is: 
+\begin{verbatim}
+    for i=1,n
+         c(i) = a(i) + b(i)
+    end
+\end{verbatim}
+
+\noindent In order to optimize the expected performance, we want to make sure that the vector elements are stored next to each other in the main memory in the following sequence: $\ldots, a(i), b(i), c(i), a(i+1), b(i+1), c(i+1), \ldots$.
+\begin{itemize}
+\item Why could this way of storing the data be advantageous?
+\item How would you realize this in C and/or in FORTRAN?
+\item Do you think it matters much whether we store the vector elements
+in the above sequence, in particular, compared to just allocating the vectors 
+$\underline{a}$, $\underline{b}$, $\underline{c}$ separately, 
+i.e., each vector is stored contiguously in main memory?
+\end{itemize}
+\end{question}
+
+\noindent This way of storing the data would be advantageous because every operation (iteration) will only have to access the three next elements in the main memory.
+
+The sequence could be implemented in C -- which uses row-based storage -- as follows:
+
+\begin{lstlisting}
+// Allocate memory for a matrix M with dimension M[n][3] where n is given
+...
+
+// Initialize the array
+for (int i = 0; i < n; ++i) {
+  M[i][1] = a[i];
+  M[i][2] = b[i];
+  M[i][3] = c[i];
+}
+
+
+// Perform the operation
+for (int i = 0; i < n; ++i) {
+  M[i][3] = M[i][1] + M[i][2];
+}
+\end{lstlisting}
+
+In Fortran, using column-based storage, we would have to interchange the row/column numbering/accessing, but otherwise it is basically the same.
+
+The rearrangement discussed above will probably not be worth the trouble in this particular case. First, the chance of cache trashing in this case is not very high. Second, if a cache line can end up in one of several cache lines, cache trashing will probably not be an issue. Third, the rearrangement discussed above will require additional memory references in the initialization phase compared to the original (and simple) approach.
+
+Assume that we don't do any changes to the original implementation. If a cache line can end up in different places in the caches (L1 and L2), what will happen when we request access to $a(i)$, $b(i)$ and $c(i)$ is that we also automatically get access to neighboring elements in three vectors. This is because a cache line in L1 cache corresponds to 4(?) floating point numbers in double precision, a cache line in L2 cache corresponds to 16 floating point numbers, and a cache line in L3 cache corresponds to 32 floating point numbers (all in double precision).
+
+
+
+
+\pagebreak
+\begin{question}
+Implement a program in C/Fortran which performs the following operations:
+
+\begin{equation*}
+  \begin{split}
+    \underline{x} &= \underline{a} + \gamma\underline{b} \\
+    \underline{y} &= \underline{a} + \underline{A}\underline{b} \\
+    \alpha &= \underline{x}^T\underline{y}
+  \end{split}
+\end{equation*}
+
+
+\noindent You can use any compatible vectors and matrices you see fit (e.g. random), and $\gamma$
+should be taken from the command line.
+\end{question}
+
+\lstinputlisting[%
+  caption={matops.c},
+  label={lst:matops},
+  language={C}]
+  {../code/matops.c}
+
+% section exercise_4_vector_operations (end)
 
 \end{document}

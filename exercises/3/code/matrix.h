@@ -6,6 +6,7 @@
 typedef struct {
   double* data;   //!< The vector data
   int len;        //!< The local length of the vector
+  int glob_len;   //!< The global length of the vector
   int stride;     //!< The distance in memory between vector elements
   int* displ;     //!< Displacements for parallell vectors
   int* sizes;     //!< The size of each process for parallell vectors

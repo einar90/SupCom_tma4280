@@ -18,6 +18,7 @@ typedef struct {
   int* sizes;     //!< The size of each process for parallell vectors
 } vector_t;
 
+
 //! \brief Convenience typedef
 typedef vector_t* Vector;
 
@@ -34,10 +35,55 @@ typedef struct {
   int glob_cols;  //!< Global number of columns in matrix
 } matrix_t;
 
+
 //! \brief Convenience typedef
 typedef matrix_t* Matrix;
+
 
 //! \brief Create a vector
 //! \param len the length of the vector
 //! \return The new vector
 Vector createVector(int len);
+
+
+//! \brief Create a parallel vector
+//! \param globLen The global vector length
+//! \param comm The communicator to split the vector across
+//! \param allocdata If 0, no data is allocated to vector
+//! \return The new vector
+Vector createVectorMPI(int globLen, MPI_Comm* comm, int allocdata);
+
+
+//! \brief Free up memory allocated to a vector
+//! \param vec The vector to free
+void freeVector(Vector vec);
+
+
+//! \brief Calculate a parallel splitting of a vector
+//! \param globLen The global length of the vector
+//! \param size The number of processes to divide vector across
+//! \param[out] len The length on each of the processes
+//! \param[out] The displacement for each of the processes
+void splitVector(int globLen, int size, int** len, int** displ);
+
+
+//! \brief Create a matrix (Fortran format)
+//! \param n1 The number of rows
+//! \param n2 The number of columns
+//! \return The new matrix
+Matrix createMatrix(int n1, int n2);
+
+
+//! \brief Create a parallel matrix (Fortran format)
+//! \param n1 The local number of rows. -1 to split
+//! \param n2 The local number of columns. -1 to split
+//! \param N1 The global number of rows
+//! \param N2 The global number of columns
+//! \param comm The communicator to split the vector across
+//! \return The new matrix
+Matrix createMatrixMPI(int n1, int n2, int N1, int N2, MPI_Comm* comm);
+
+
+//! \brief Free up memory allocated to a matrix
+//! \param A The matrix to free
+void freeMatrix(Matrix A);

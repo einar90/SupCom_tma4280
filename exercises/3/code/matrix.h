@@ -10,10 +10,7 @@ extern MPI_Comm SelfComm;
 typedef struct {
   double* data;   //!< The vector data
   int len;        //!< The local length of the vector
-  int glob_len;   //!< The global length of the vector
   int stride;     //!< The distance in memory between vector elements
-  MPI_Comm* comm; //!< The MPI communicator the vector is split across
-  int comm_size;  //!< The size of the MPI communicator the vector is split across
   int* displ;     //!< Displacements for parallell vectors
   int* sizes;     //!< The size of each process for parallell vectors
 } vector_t;
@@ -46,14 +43,6 @@ typedef matrix_t* Matrix;
 Vector createVector(int len);
 
 
-//! \brief Create a parallel vector
-//! \param globLen The global vector length
-//! \param comm The communicator to split the vector across
-//! \param allocdata If 0, no data is allocated to vector
-//! \return The new vector
-Vector createVectorMPI(int globLen, MPI_Comm* comm, int allocdata);
-
-
 //! \brief Free up memory allocated to a vector
 //! \param vec The vector to free
 void freeVector(Vector vec);
@@ -72,16 +61,6 @@ void splitVector(int globLen, int size, int** len, int** displ);
 //! \param n2 The number of columns
 //! \return The new matrix
 Matrix createMatrix(int n1, int n2);
-
-
-//! \brief Create a parallel matrix (Fortran format)
-//! \param n1 The local number of rows. -1 to split
-//! \param n2 The local number of columns. -1 to split
-//! \param N1 The global number of rows
-//! \param N2 The global number of columns
-//! \param comm The communicator to split the vector across
-//! \return The new matrix
-Matrix createMatrixMPI(int n1, int n2, int N1, int N2, MPI_Comm* comm);
 
 
 //! \brief Free up memory allocated to a matrix

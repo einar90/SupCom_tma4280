@@ -1,10 +1,6 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
-#include "openmpi-x86_64/mpi.h"
-extern MPI_Comm WorldComm;
-extern MPI_Comm SelfComm;
-
 
 //! \brief A structure describing a vector
 typedef struct {

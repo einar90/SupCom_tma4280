@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(matopsmpi)
 
-add_executable(matopsmpi matops_mpi.c)
+set(SOURCES matops_mpi.c matrix.c)
+add_executable(matopsmpi ${SOURCES})
 
 # Require MPI for this project:
 find_package(MPI REQUIRED)

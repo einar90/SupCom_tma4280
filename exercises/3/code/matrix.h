@@ -1,6 +1,6 @@
-#ifndef COMMON_H_
-#define COMMON_H_
-
+#ifndef MATRIX_H_
+#define MATRIX_H_
+#endif
 
 //! \brief A structure describing a vector
 typedef struct {
@@ -17,7 +17,7 @@ typedef struct {
 typedef vector_t* Vector;
 
 
-//! \brief A structure describing a vector
+//! \brief A structure describing a matrix
 typedef struct {
   double** data;  //!< The matrix data
   Vector as_vec;  //!< The matrix viewed as one long vector

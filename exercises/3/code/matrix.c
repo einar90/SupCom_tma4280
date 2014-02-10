@@ -41,11 +41,11 @@ void freeVector(Vector vec)
 Matrix createMatrix(int n1, int n2)
 {
   int i;
-  Matrix resutlt = (Matrix)calloc(1,sizeof(matrix_t));
+  Matrix result = (Matrix)calloc(1,sizeof(matrix_t));
   result->rows = n1;
   result->cols = n2;
 
-  result->data = (double**)calloc(n2,sizeof(dobule*));
+  result->data = (double**)calloc(n2,sizeof(double*));
   result->data[0] = (double*)calloc(n1*n2,sizeof(double));
   for (i=1; i < n2; i++)
     result->data[i] = result->data[i-1] + n1;

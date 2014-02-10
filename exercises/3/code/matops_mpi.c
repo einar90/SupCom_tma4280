@@ -1,9 +1,15 @@
 #include "stdio.h"
 #include "openmpi-x86_64/mpi.h"
+#include "matrix.h"
+
+#define ROWS 100
+#define COLS 100
+
 
 int main(int argc, char const *argv[])
 {
   int rank, size, tag, i;
+  Matrix A = createMatrix(ROWS, COLS);
   MPI_Status status;
   char message[20];
 

@@ -1,6 +1,9 @@
-#include "stdio.h"
-#include "openmpi-x86_64/mpi.h"
-#include "matrix.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <mpi.h>
+
+#include "common.h"
 
 #define ROWS 100
 #define COLS 100

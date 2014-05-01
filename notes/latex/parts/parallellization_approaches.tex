@@ -5,8 +5,200 @@
 
 The two approaches to parallellizing a program duscussed in the course are are \emph{Shared Memory} and \emph{Distributed Memory}.
 
+\subsection{Shared memory} % (fold)
+\label{sub:shared_memory}
+In a shared-memory architecture, all the processors have access to all the available memory, i.e. all the processors have direct access to the global address space. Three basic types of shared memory systems are discussed here: SMP, NUMA and ccNUMA.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/shared.pdf}
+  \caption{An illustration of a shared memory organization.}
+  \label{fig:shared}
+\end{figure}
+
+\subsubsection{Symmetric Multi-Processor: SMP} % (fold)
+\label{ssub:uniform_memory_access}
+Symmetric Multi-Processor (SMP) systems have uniform memory access, i.e. the memory access times for all procesors and memory modules are equal. Examples are bus-based, switch based and crossbar (Figure~\ref{fig:crossbar_a}) organizations. These systems are expensive, and cache coherency is a challenge.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/crossbar.pdf}
+  \caption{A crossbar interconnect. The global memory is accessible to every processor.}
+  \label{fig:crossbar_a}
+\end{figure}
+% subsubsection uniform_memory_access (end)
+
+\subsubsection{Non-Uniform Memory Access: NUMA} % (fold)
+\label{ssub:non_uniform_memory_access_numa}
+ Non-Uniform Memory Access implies that memory access times vary between processors and memory modules. The caches only hold data from local memory, and no mechanisms exist to keep the chaces consistent with the global address space. In principle any processor could read/wirte to/from any memory location in the global address space; but in practice message passing is normally used. Thus we normally utilize both shared memory and distributed memory \emph{programming} models. An example of a NUMA organization is several SMPs connected via a high-speed low-latency network, illustrated in Figure~\ref{fig:numa}. Each SMP node may contain several processors and memory modules.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[]{illustrations/architectures/numa.pdf}
+  \caption{Example of a NUMA organization. Each SMP node may contain several processors and memory modules, and each node has uniform memory access.}
+  \label{fig:numa}
+\end{figure}
+
+% subsubsection non_uniform_memory_access_numa (end)
+
+\subsubsection{Cache coherent Non-Uniform Memory Access: ccNUMA} % (fold)
+\label{ssub:cache_coherent_non_uniform_memory_access_ccnuma}
+Cache coherent Non-Uniform Memory Access organizations have hardware support to keep the chaches consistent. This enables us to better exploit the shared memory programming model, but message passing may still be used.
+% subsubsection cache_coherent_non_uniform_memory_access_ccnuma (end)
+
+
+
+% subsection shared_memory (end)
+
+
+\subsection{Distributed memory} % (fold)
+\label{sub:distributed_memory}
+In a distributed memory system, each processor has only local memory access; data stored in the memory modules associated with other processors can only be reached via explicit message-passing (send/receive commands). Examples of organizations are 2D mesh/toroid, 3D mesh, 8D enhanced hyper-cube (Vilje).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/distributed.pdf}
+  \caption{An illustration of a distributed memory organization.}
+  \label{fig:distributed}
+\end{figure}
+
+% subsection distributed_memory (end)
+
 % NUMA utilizes both
 % SMP utilizes shared memory
+
+\subsection{Example architectures} % (fold)
+\label{sub:example_architectures}
+
+\subsubsection{Bus} % (fold)
+\label{ssub:bus}
+
+\begin{itemize}
+  \item Shared memory, i.e. all processors can access all physical memory.
+  \item SMP (Symmetric MultiProcessor) organization.
+  \item All memory locations are equidistant to all processors, i.e. they have the same access time.
+  \item \emph{Limitation:} The total bandwidth is fixed, given by the bus.
+  \item Processors are easily added at low cost, but they must all share the same limiting bus.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/bus.pdf}
+  \caption{A bus-based organization. The global memory is accessible to every processor.}
+  \label{fig:bus}
+\end{figure}
+
+% subsubsection bus (end)
+
+
+\subsubsection{Crossbar (switch-based)} % (fold)
+
+\begin{itemize}
+\label{ssub:crossbar}
+
+  \item Shared memory, i.e. all processors can access all physical memory.
+  \item SMP organization.
+  \item Multiple paths are available between a processor (or I/O-unit) and a memory unit.
+  \item \emph{Limitation:} Expanding the system is expensive because the number of parts increases (switches etc.).
+  \item Provides good scalability, but expanding the system is expensive. It is therefore only used for smaller systems.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/crossbar.pdf}
+  \caption{A crossbar interconnect. The global memory is accessible to every processor.}
+  \label{fig:crossbar}
+\end{figure}
+% subsubsection crossbar (end)
+
+
+\subsubsection{Mesh} % (fold)
+\label{ssub:mesh}
+
+\begin{itemize}
+  \item Distributed memory, i.e. a message passing architecture consisting of separate nodes communicating with eachother.
+  \item Each processor is connected to a few neighbouring processorsin a very regular pattern. In a 2D mesh, each processor is typically connected to 4 neighbouring processors (East, West, North and South), \emph{except} for the processors on the boundary.
+  \item The \emph{toroid} is a variant of the mesh topology with special connections between the boundary of the mesh, reducing the worst case hop-count for messages between nodes.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/mesh.pdf}
+  \caption{A 2D mesh interconnect. Each circle represents a processing element: A CPU, local cache and local memory, i.e. a single processor. Such a processing element is also known as a node.}
+  \label{fig:mesh}
+\end{figure}
+
+% subsubsection mesh (end)
+
+% subsection example_architectures (end)
+
+
+\subsection{Example architectures} % (fold)
+\label{sub:example_architectures}
+
+\subsubsection{Bus} % (fold)
+\label{ssub:bus}
+
+\begin{itemize}
+  \item Shared memory, i.e. all processors can access all physical memory.
+  \item SMP (Symmetric MultiProcessor) organization.
+  \item All memory locations are equidistant to all processors, i.e. they have the same access time.
+  \item \emph{Limitation:} The total bandwidth is fixed, given by the bus.
+  \item Processors are easily added at low cost, but they must all share the same limiting bus.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/bus.pdf}
+  \caption{A bus-based organization. The global memory is accessible to every processor.}
+  \label{fig:bus}
+\end{figure}
+
+% subsubsection bus (end)
+
+
+\subsubsection{Crossbar (switch-based)} % (fold)
+
+\begin{itemize}
+\label{ssub:crossbar}
+
+  \item Shared memory, i.e. all processors can access all physical memory.
+  \item SMP organization.
+  \item Multiple paths are available between a processor (or I/O-unit) and a memory unit.
+  \item \emph{Limitation:} Expanding the system is expensive because the number of parts increases (switches etc.).
+  \item Provides good scalability, but expanding the system is expensive. It is therefore only used for smaller systems.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/crossbar.pdf}
+  \caption{A crossbar interconnect. The global memory is accessible to every processor.}
+  \label{fig:crossbar}
+\end{figure}
+% subsubsection crossbar (end)
+
+
+\subsubsection{Mesh} % (fold)
+\label{ssub:mesh}
+
+\begin{itemize}
+  \item Distributed memory, i.e. a message passing architecture consisting of separate nodes communicating with eachother.
+  \item Each processor is connected to a few neighbouring processorsin a very regular pattern. In a 2D mesh, each processor is typically connected to 4 neighbouring processors (East, West, North and South), \emph{except} for the processors on the boundary.
+  \item The \emph{toroid} is a variant of the mesh topology with special connections between the boundary of the mesh, reducing the worst case hop-count for messages between nodes.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/architectures/mesh.pdf}
+  \caption{A 2D mesh interconnect. Each circle represents a processing element: A CPU, local cache and local memory, i.e. a single processor. Such a processing element is also known as a node.}
+  \label{fig:mesh}
+\end{figure}
+
+% subsubsection mesh (end)
+
+% subsection example_architectures (end)
+
+
 
 
 % section approaches_to_parallellization (end)

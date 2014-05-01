@@ -1,0 +1,44 @@
+% -*- root: ../../supcom.tex -*-
+
+
+%
+\begin{tikzpicture}[thick, inner sep=0pt, minimum size=0.5cm]
+  \node [three sided top                 ] (C1) at (0,4)  { \$ };
+  \node [three sided bottom, anchor=south] (P1) at (C1.north)  { P };
+  \draw [densely dotted] (P1.south west) -- (P1.south east);
+
+  \node [three sided top                 ] (C2) at (1.5,4)  { \$ };
+  \node [three sided bottom, anchor=south] (P2) at (C2.north)  { P };
+  \draw [densely dotted] (P2.south west) -- (P2.south east);
+
+  \node [draw, minimum width=1cm] (IO1) at (3,4) { I/O };
+
+  \node [draw, minimum width=1cm] (IO2) at (4.5,4) { I/O };
+
+  \node [draw] (M1) at (6, 3) {M};
+
+  \node [draw] (M2) at (6, 2) {M};
+
+  \node [draw] (M3) at (6, 1) {M};
+
+  \node [draw] (M4) at (6, 0) {M};
+
+  \draw [color=red] (M4.west) -- (0,0);
+  \draw [color=red] (M3.west) -- (0,1);
+  \draw [color=red] (M2.west) -- (0,2);
+  \draw [color=red] (M1.west) -- (0,3);
+
+  \draw [color=red] (C1.south) -- (0,0);
+  \draw [color=red] (C2.south) -- (1.5,0);
+  \draw [color=red] (IO1.south) -- (3,0);
+  \draw [color=red] (IO2.south) -- (4.5,0);
+
+  \foreach \x in {0, 1.5, 3, 4.5}
+  {
+    \foreach \y in {0, 1, 2, 3}
+    {
+      \fill (\x,\y) circle [radius=2.5pt];
+    }
+  }
+
+\end{tikzpicture}

@@ -1,0 +1,29 @@
+% -*- root: ../../supcom.tex -*-
+
+
+%
+\begin{tikzpicture}[thick, inner sep=0pt, minimum size=0.5cm]
+\newcommand{\xmin}{0}
+\newcommand{\xmax}{3}
+\newcommand{\ymin}{0}
+\newcommand{\ymax}{3}
+
+\foreach \x in {\xmin,...,\xmax}
+{
+  \draw [color=red] (\x, 0) -- (\x, \ymax);
+}
+
+\foreach \y in {\ymin,...,\ymax}
+{
+  \draw [color=red] (0, \y) -- (\xmax, \y);
+}
+
+\foreach \x in {\xmin,...,\xmax}
+{
+  \foreach \y in {\ymin,...,\ymax}
+  {
+    \fill (\x,\y) circle [radius=2.5pt];
+  }
+}
+
+\end{tikzpicture}

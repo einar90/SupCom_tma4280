@@ -1,0 +1,32 @@
+% -*- root: ../../supcom.tex -*-
+
+
+%
+\begin{tikzpicture}[thick, inner sep=0pt, minimum size=0.5cm]
+  \node [three sided bottom              ] (P1) at (0,  2)  { P };
+  \node [three sided top, anchor=north] (C1) at (P1.south)  { \$ };
+  \draw [densely dotted] (P1.south west) -- (P1.south east);
+  \draw [<->] (C1) -- (0,0) {};
+
+  \node [three sided bottom              ] (P2) at (2,  2)  { P };
+  \node [three sided top, anchor=north] (C2) at (P2.south)  { \$ };
+  \draw [densely dotted] (P2.south west) -- (P2.south east);
+  \draw [<->] (C2) -- (2,0) {};
+
+  \node [draw, minimum width=1cm] (IO1) at (4,1.5) { I/O };
+  \draw [<->] (IO1) -- (4,0) {};
+
+  \node [draw, minimum width=1cm] (IO2) at (6,1.5) { I/O };
+  \draw [<->] (IO2) -- (6,0) {};
+
+  \node [draw] (M1) at (1, -1.5) {M};
+  \draw [<->] (M1) -- (1,0) {};
+
+  \node [draw] (M2) at (3, -1.5) {M};
+  \draw [<->] (M2) -- (3,0) {};
+
+  \node [draw] (M3) at (5, -1.5) {M};
+  \draw [<->] (M3) -- (5,0) {};
+
+  \draw [very thick, color=red, <->] (-1,0) -- (7,0);
+\end{tikzpicture}

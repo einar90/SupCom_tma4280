@@ -1,0 +1,35 @@
+% -*- root: ../../supcom.tex -*-
+
+
+%
+\begin{tikzpicture}[thick, inner sep=0pt, minimum size=0.5cm]
+  \node [three sided top                 ] (C1) at (1,0)  { \$ };
+  \node [three sided bottom, anchor=south] (P1) at (C1.north)  { P };
+  \draw [densely dotted] (P1.south west) -- (P1.south east);
+
+  \node [three sided top                 ] (C2) at (5,0)  { \$ };
+  \node [three sided bottom, anchor=south] (P2) at (C2.north)  { P };
+  \draw [densely dotted] (P2.south west) -- (P2.south east);
+
+  \node [draw] (M1) at ($(C1.north east) + (1,0)$) {M};
+  \draw [] (C1.north east) -- (M1.west);
+
+  \node [draw] (M2) at ($(C2.north east) + (1,0)$) {M};
+  \draw [] (C2.north east) -- (M2.west);
+
+  \node [color=red] at (3,2) {scalable network};
+  \draw [] (0,2.3) -- (9,2.3);
+  \draw [] (0,1.7) -- (9,1.7);
+  \draw [] (0,1.7) -- (0,2.3);
+
+  \draw [] ($(C2.north east) + (0.4,0)$) -- ($(C2.north east) + (0.4,1.42)$);
+  \draw [] ($(C1.north east) + (0.4,0)$) -- ($(C1.north east) + (0.4,1.42)$);
+
+  \fill (7.50,.25) circle [radius=1.5pt];
+  \fill (7.75,.25) circle [radius=1.5pt];
+  \fill (8.00,.25) circle [radius=1.5pt];
+  \fill (8.25,.25) circle [radius=1.5pt];
+  \fill (8.50,.25) circle [radius=1.5pt];
+
+
+\end{tikzpicture}

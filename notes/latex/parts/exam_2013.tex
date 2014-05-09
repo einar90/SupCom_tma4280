@@ -1,0 +1,322 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Exam 2013} % (fold)
+\label{sec:exam_2013}
+\subsection{Problem 1} % (fold)
+\label{sub:problem_1}
+
+\subsubsection{Approaches to parallelizing a program} % (fold)
+\label{ssub:approaches_to_parallelizing_a_program}
+
+\begin{question}
+  \textbf{a)} We have considered two ways of parallelizing a program in the course. Outline the two different ways and explain how they relate to different hardware architectures.
+\end{question}
+
+The two primary approaches to parallelizing a program is \emph{shared memory} and \emph{distributed memory}.
+
+\begin{description}
+  \item[Shared memory:] This approach is used for systems where several processors share the same memory; i.e. all processors run in their own thread but may read from and write to the same locations in memory. The benefit of this is that the communication time between processors is eliminated. The downside is that we have to be careful when we implement the parallelization to avoid the threads overwriting eachothers buffers, causing inconsistent program output. It is also expensive if we want to use \emph{many processors}. OpenMP is a C/Fortran language extension for programming shared memory parallel machines; parallelizing programs using it is (usually) very simple.
+  \item[Distributed memory:] The distributed memory approach is used for systems where each processor only has local memory access -- data stored in memory modules associated with other processes may only be accessed via explicit message passing. The most common impolementation is MPI: Message Passing Interface. This approach is more flexible than the shared memory approach, as it may also be used for processors that share memory, providing a more explicit division of memory.
+\end{description}
+
+Note that these two different implementations may be combined. E.g. for a system consisting of multiple connected nodes, where each node contains multiple processors (cores) sharing memory. MPI may then be used for communication between nodes, while OpenMP may be used to distribute the workload within each node (OpenMP may not be used across nodes).
+% subsubsection approaches_to_parallelizing_a_program (end)
+
+\subsubsection{MPI functions} % (fold)
+\label{ssub:mpi_functions}
+
+\begin{question}
+  MPI is a library we have considered much in the course. It consists of more than a hundred functions. Explain how these can be grouped into four categories, and how you can use the operations from these four categories to create any communication pattern.
+\end{question}
+
+The four categores MPI functions may be grouped into are:
+\begin{description}
+  \item[One-to-one:] Also called point-to-point operations (send/receive). Used for communication between two specific processes.
+  \item[One-to-all:] Used to distribute data from one one process to all the others, e.g. \emph{broadcast}.
+  \item[All-to-one:] Used to gather data from all processes onto a root process, e.g. summing a distributed array or finding the max in it.
+  \item[All-to-all:] Used to synchronize data between processes.
+\end{description}
+By ``all'' we mean all processes within a communicator consisting of a certain number of processes. The default is to have \emph{all} processes in the same communicator, but they may be split up.
+% subsubsection mpi_functions (end)
+
+\subsubsection{OpenMP: shared buffer} % (fold)
+\label{ssub:openmp_shared_buffer}
+
+\begin{question}
+  OpenmP is another approach we have studied in the course. Consider the following piece of code
+  \begin{lstlisting}
+double A[5];
+double b;
+
+#pragma omp parallel for schedule(static)
+for (int i=0; i<5; ++i){
+  b = log(127*i/32);
+  A[i] = pow(b,67);
+}
+  \end{lstlisting}
+  Explain why the results stored in the array \texttt{A} are inconsistent between runs.
+\end{question}
+
+The results will be inconsistent because all the threads share the same memory, and therefore they all write to the same memory location when they write to the variable \texttt{b}. After one thread has written to \texttt{b}, and before it has written to \texttt{A[i]}, some other thread may have written its own (different) value to the memory location, thus changing the ``intended'' content of \texttt{A[i]}. The threads are run in no particular order, so the content of \texttt{A}  will vary from run to run.
+% subsubsection openmp_shared_buffer (end)
+
+\subsubsection{MPI-I/O} % (fold)
+\label{ssub:mpi_i_o}
+
+\begin{question}
+  Explain how you can use MPI-I/O to store a multi-dimensional, parallel array to disk in a single operation.
+\end{question}
+
+To store a multi-dimensional, parallel array to disk in a single operation using MPI-I/O, we first need to define a communicator with an attached topology (e.g. cartesian), and map the processes onto it. We then create a custom datatype describing the data pattern on secondary storage, a file view with this attached. We can then use this file view when we call the write function on each process.
+
+Because the system knows the data access patterns on each process up front, it can optimize how storing the data to disk is performed.
+% subsubsection mpi_i_o (end)
+% subsection problem_1 (end)
+
+
+
+
+\clearpage
+\subsection{Problem 2} % (fold)
+\label{sub:problem_2}
+
+\begin{question}
+  We here consider the solution of a 2D Helmholtz problem with homogenous Dirichlet boundary conditions on the unit square;
+
+  \begin{equation}
+    - \nabla^2 u + \mu u = f \; \text{in} \; \Omega = (0,1) \times (0,1), \; u\vert_{\partial \Omega}
+  \end{equation}
+
+  The problem is discretized using finite difference methods, with the five point formula for the second derivatives on a structured mesh with spacing $h=1/n$ in both spatial directions. This results in the linear system of equations
+
+  \begin{equation}
+    \mathbf{A}u=f
+  \end{equation}
+\end{question}
+
+\subsubsection{Gauss-Jacobi using functions} % (fold)
+\label{ssub:gauss_jacobi_using_functions}
+
+\begin{question}
+  Explain why and how you can avoid forming the matrix if you employ Gauss-Jacobi iterations to solve this problem.
+\end{question}
+
+\begin{equation}
+  x_i^{k+1} = \frac{1}{a_{ii}} \left( b_i - \sum_{j=1, j\neq i}^N a_{ij} x_j^k \right) \label{eq:gauss_seidel}
+\end{equation}
+
+As we se from the formula used for Gauss-Jacobi iterations over, the method does no require changing the matrix $\mathbb{A}$; only the values in the vector $u$ are updated. This, combined with the fact that the five-point stencil will give us a fairly simple banded matrix $\mathbf{A}$ with five diagonals and all known values, implies that we can easily get the values for each required pair of $i,j$ in $A_{ij}$ using a simple function.
+% subsubsection gauss_jacobi_using_functions (end)
+
+\subsubsection{Hybrid MPI/OpenMP solver for the Gauss-Jacobi scheme} % (fold)
+\label{ssub:hybrid_mpi_openmp_solver_for_the_gauss_jacobi_scheme}
+We can use domain decomposition to divide the problem across multiple processes. I.e. each process computes a specific set of rows. In each process we can then use OpenMP to further divide the row computations across threads. We will still need some computed $u$ values from the other processes; these are exchanged using MPI\_Shift and MPI\_Sendrecv.
+
+Finally we can simply gather the computed $u$ vector on the root process.
+% subsubsection hybrid_mpi_openmp_solver_for_the_gauss_jacobi_scheme (end)
+
+\subsubsection{Speedup and efficiency} % (fold)
+\label{ssub:speedup_and_efficiency}
+
+\begin{question}
+  Give parallel speedup and efficiency estimates. You can assume a simple linear network model:
+  \begin{equation}
+    \nonumber
+    \tau = \tau_s + m\tau_c
+  \end{equation}
+  where $\tau$ is the total time; $\tau_s$ is the latency; $\tau_c$ is the inverse bandwidth of the network (i.e. time pr. byte); and $m$ is the number of bytes sent. We have to perform $M$ iterations to reduce the residual sufficiently. You can ignore the use of threads in this calculation, and you can assume that $n \gg 1$ .
+\end{question}
+
+From \eqref{eq:gauss_seidel} we see that each iteration for our system looks (with the five-point stencil) that we will get
+\begin{itemize}
+  \item 1 division: $\frac{1}{a_ii}\times(\dots)$.
+  \item 1 subtraction: $b_i - \sum[\dots]$.
+  \item 4 multiplications: $a_{ij}x_j^k$ is performed for the four non-zero off-diagonal elements pr. row; not for the element on the diagonal because of the $j\neq i$.
+  \item 3 additions: four $a_{ij}x_j^k$ elements are summed.
+\end{itemize}
+in total 9 operations. The time required to do each operation, i.e. one flop, is $\tau_f$. These 9 operations are performed $n^2$ times (we're operating in 2D, so we have $n^2$ equations). And so the total time required to do one sweep is
+\begin{equation}
+  T_1^s = 9n^2\tau_f
+\end{equation}
+We then need to compute the resudial $r$ to check the convergence criterium. This is computed as
+\begin{equation}
+  r = b - \mathbf{A}x^k
+\end{equation}
+which requires the following operations:
+\begin{itemize}
+  \item For $\mathbf{A}x^k$ we need $n^2$ multiplications and $n(n-1)$ addtions. $n^2+n(n-1)\asymp 2n^2$.
+  \item For $b - \mathbf{A}x^k$ we need $n$ subtractions.
+\end{itemize}
+Asymptotically we need $2n^2 + n \asymp 2n^2$ operations to perform the convergence criterium check. Therefore the total time required pr. iteration is
+\begin{equation}
+  T_1 = T_1^s + 2n^2 \tau_f = 11n^2 \tau_f
+\end{equation}
+
+% TODO: Gjør ferdig dette
+
+% subsubsection speedup_and_efficiency (end)
+
+% subsection problem_2 (end)
+
+
+
+\clearpage
+\subsection{Problem 3} % (fold)
+\label{sub:problem_3}
+
+\subsubsection{Applicability of the FST Poisson solver} % (fold)
+\label{ssub:applicability_of_fst}
+
+\begin{question}
+  The fast sine transform based Poisson solver considered in the course is aplicable to any elliptic equation. \textbf{True/False}.
+\end{question}
+
+\textbf{False}. The \emph{diagonalization} method; to use \emph{FST} we depend on the particular eigenspace of the Poisson matrix -- it needs to be periodic with period $2\pi$ and \emph{odd}.
+% subsubsection applicability_of_fst (end)
+
+\subsubsection{MPI vs. OpenMP} % (fold)
+\label{ssub:mpi_vs_openmp}
+
+\begin{question}
+  Eventually, OpenMP will replace MPI as the preferred standard for parallel computing. \textbf{True/False}.
+\end{question}
+
+\textbf{False}. OpenMP and MPI supplement eachother, they do not replace eachother. Both the distributed and shared memory models will be around in the forseeable future.
+% subsubsection mpi_vs_openmp (end)
+
+\subsubsection{Smallest number: \texttt{float} vs \texttt{double}} % (fold)
+\label{ssub:smallest_number_tt}
+\begin{question}
+  You can represent smaller numbers using double precision than single precision. \textbf{True/False}.
+\end{question}
+
+\textbf{True}. Each floating point has a binary representation with three fields: $S$, denoting the sign; $E$ is the exponent; and $F$ is the fraction part of the mantissa:
+
+\vspace{1em}
+
+\begin{center}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    S & \hspace{4em} E \hspace{4em} & \hspace{8em} F \hspace{8em} \\
+    \hline
+  \end{tabular}
+\end{center}
+
+The actual value of the floating point is
+\begin{equation}
+  V = (-1)^S \cdot 2^{E-B} \cdot M \label{eq:float_value}
+\end{equation}
+where $M$ is the mantissa, and $B$ is called the \emph{bias}. The exponent $E$ is always adjusted such that the mantissa can be expressed as
+\begin{equation}
+  M = \underset{\times 2^0}{\underbrace{1}} \, . \,
+                                              \overset{F}{
+                                                \overbrace{
+                                                  \underset{\times 2^{-1}}{\underbrace{b_1}} \;
+                                                  \underset{\times 2^{-2}}{\underbrace{b_2}} \;
+                                                  \underset{\times 2^{-3}}{\underbrace{b_3}} \;
+                                                  \dots
+                                                }
+                                              }
+\end{equation}
+where $F$ denotes the fraction of the mantissa in binary representation. (i.e.) the binary digits $b_1b_1\dots$. Since this representation is always assumed, the binary number 1 in the front is not explicitly represented. Note that, in decimal representation,
+\begin{equation}
+  1 \leq M < 2
+\end{equation}
+since the fraction $F$ in decimal representation is always less than 1.
+
+The number of bytes used for each part for single- and double precision floats are shown in the table below.
+
+\vspace*{1em}
+\begin{center}
+    \begin{tabular}{lllll|l}
+      \toprule
+      \textsc{Precision} & $S$ & $E$ & $F$ & \textsc{Total} & \textsc{Bias} \\
+      \midrule
+      Single & 1 & 8  & 23 & 32 & 127 \\
+      Double & 1 & 11 & 52 & 64 & 1023 \\
+      \bottomrule
+  \end{tabular}
+\end{center}
+
+In single precision, $E$ is represented using 8 bits, giving $2^8 = 256$ possibilities (including 0) where the values $E=0$ and $E=255$ are used to represent zero and infinity, respectively. Which means that the smallest and largest $E$'s used for representing other numbers are $E_{min,s}=1$ and $E_{max,s}=254$.
+
+For double precision, $E$ is represented using 11 bits, giving $2^{11}=2048$ possibilities. Again, $E=0$ is reserved for zero and $E=2048$ is reserved for infinity. Which means that the largest avalable exponent is $E_{max,d}=2046$.
+
+For both double and single precision, the largest possible mantissa is $M=1.999\dots \approx 2$. Combining these maximum values for $M$ and $E$ with $S=1$ and the bias $B$ in equation \eqref{eq:float_value} gives us the largest negative numbers for single and double precision numbers:
+\begin{align}
+    V_{min_1, s} &= (-1)^1 \cdot 2^{254-127} \cdot 2 = -3.40\dots\times 10^{38} \\
+    V_{min_1, d} &= (-1)^1 \cdot 2^{2046-1023} \cdot 2 = 1.7\dots \times 10^{308}
+\end{align}
+
+If we interpret ``smallest'' value as the number with the smallest absolute value (or the smallest fraction), then we need the smallest value for the mantissa and the largest negative value for the exponent. These are, respectively, $M_{min} = 1, E_{min} = 1$. So the smallest numbers for double and single precision are
+\begin{align}
+    V_{min_2, s} &= 1 \cdot 2^{1-127} \cdot 1 = 1.17\dots \times 10^{-38}
+    V_{min_2, d} &= 1 \cdot 2^{1-1023} \cdot 1 = 2.22\dots \times 10^{-308}
+\end{align}
+
+So we see that, whichever way we enterpret ``smallest number'', double precision will give us a smaller number.
+
+\vspace*{1em}\noindent \textbf{\emph{Note on accuracy}}: By accuracy we mean the smalles fraction that can be represented by the mantissa. This is given by the number of bytes that are used by the format to store the matissa $F$. For single precision, this is 23; so the smallest fraction we can represent is $2^{-23} = 1.19\dots \times 10^{-7}$. This implies that we have about 7 digits of accuracy. For double precision numbers we use 52 bits to store the mantissa, so the smallest fraction we can represent is $2^{-52}=2.22\dots \times 10^{-16}$. This implies that doubles have about 16 digits of accuracy.
+% subsubsection smallest_number_tt (end)
+
+\subsubsection{Cancellation} % (fold)
+\label{ssub:cancellation}
+
+\begin{question}
+  Cancellation is a concern when adding floating point numbers. \textbf{True/False}.
+\end{question}
+
+\textbf{False}. Cancellation happens when you \emph{subtract} numbers that are very close.
+% subsubsection cancellation (end)
+
+\subsubsection{N-way cache} % (fold)
+\label{ssub:n_way_cache}
+
+\begin{question}
+  Processors with N-way cache cannot be superscalar.
+\end{question}
+\textbf{False}. A processor can be superscalar no matter the cache layout. N-way cache mapping is illustrated in Figure~\ref{fig:nway}. When we use $n$-way cahce mapping, there are $n$ ways to map a memory address to a cache address, i.e. a particular memory location can potentially end up in one of $n$ cache lines (Figure~\ref{fig:nway}). This means fewer cache misses (compared to direct mapping), thus increasing the possibility of keeping the pipe filled, which increases the superscalar performace.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/cache/n-way.pdf}
+  \caption{$n$-way set-associative cache.}
+  \label{fig:nway}
+\end{figure}
+% subsubsection n_way_cache (end)
+
+\subsubsection{OpenMP scheduling} % (fold)
+\label{ssub:openmp_scheduling}
+
+\begin{question}
+  A code consists of a \texttt{for}-loop with a big difference in cost between each iteration. If we are to do this loop in parallel using OpenMP, a ``guided'' scheduling mode is a good choice. \textbf{True/False.}
+\end{question}
+
+\emph{True}. A guided mode will likely give the best balance, given that there is no bias (that the cost does not depend on iteration). If there is a bias, guided will give the heaviest calculations to the first threads, which means that the later threads may finish before them. In that case, dynamic will be better.
+% subsubsection openmp_scheduling (end)
+
+\subsubsection{Parallel performance vs. code optimization} % (fold)
+\label{ssub:parallel_performance_vs_code_optimization}
+
+\begin{question}
+  It is easier to get good parallel efficiency on a well-optimized code. \textbf{True/False}.
+\end{question}
+
+\textbf{False}. Typically you get a better efficiency on less optimized code since the balance between communication and computation has shifted (communication is more relevant). Optimizing for communication is often easier to do on code that has not already been optimized for computation.
+% subsubsection parallel_performance_vs_code_optimization (end)
+
+\subsubsection{Generality of domain decomposition} % (fold)
+\label{ssub:generality_of_domain_decomposition}
+
+\begin{question}
+  When solving a linear system of equations, domain decomposition methods are preferred in parallel due to the generality. \textbf{True/False}.
+\end{question}
+
+\textbf{False}. They are prefered due to their ability to reduce network traffic. A method based on matrix distribution would be more general.
+
+% subsubsection generality_of_domain_decomposition (end)
+
+
+% subsection problem_3 (end)
+
+% section exam_2013 (end)

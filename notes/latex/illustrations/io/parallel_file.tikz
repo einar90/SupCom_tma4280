@@ -1,0 +1,32 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node[rectangle split h=2, rounded corners, minimum width=10cm] (hdd1) at (0,0)
+    {$d_0$ \nodepart[text width=10em]{two}  };
+  \node[rectangle split h=2, rounded corners, minimum width=10cm] (hdd2) at (0,-1)
+    {$d_0$ \nodepart[text width=10em]{two}  };
+  \node[rectangle split h=2, rounded corners, minimum width=10cm] (hdd3) at (0,-2)
+    {$d_0$ \nodepart[text width=10em]{two}  };
+  \node[rectangle split h=2, rounded corners, minimum width=10cm] (hdd4) at (0,-3)
+    {$d_0$ \nodepart[text width=10em]{two}  };
+
+  \node [anchor=south, font=\tiny] at (hdd1.north) {HDD1};
+  \node [anchor=south, font=\tiny] at (hdd2.north) {HDD2};
+  \node [anchor=south, font=\tiny] at (hdd3.north) {HDD3};
+  \node [anchor=south, font=\tiny] at (hdd4.north) {HDD4};
+
+  \node [draw, rounded corners, inner sep=.8em] (p0) at  (-2.0,2) {$d_0$};
+  \node [draw, rounded corners, inner sep=.8em] (p1) at  (-0.5,2) {$d_1$};
+  \node [draw, rounded corners, inner sep=.8em] (p2) at  ( 1.0,2) {$d_2$};
+  \node [draw, rounded corners, inner sep=.8em] (p3) at  ( 2.5,2) {$d_3$};
+
+  \node [anchor=south] at (p0.north) {$P_0$};
+  \node [anchor=south] at (p1.north) {$P_1$};
+  \node [anchor=south] at (p2.north) {$P_2$};
+  \node [anchor=south] at (p3.north) {$P_3$};
+
+  \draw [bend left, -> ] (hdd1.west) to (p0.west);
+  \draw [bend left=2.5cm, -> ] (hdd2.west) to (p1.west);
+  \draw [bend right, ->] (hdd3.east) to (p2.east);
+  \draw [bend right, ->] (hdd4.east) to (p3.east);
+\end{tikzpicture}

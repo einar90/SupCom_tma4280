@@ -1,0 +1,11 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node [rectangle split h=7, inner sep=.8em] {$P_0$
+                                               \nodepart{two}   $P_1$
+                                               \nodepart{three} $\dots$
+                                               \nodepart{four}  $P_{N-1}$
+                                               \nodepart{five}  $P_0$
+                                               \nodepart{six}   $P_1$
+                                               \nodepart{seven} $\dots$};
+\end{tikzpicture}

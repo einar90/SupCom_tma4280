@@ -1,0 +1,18 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node [draw, inner sep=1em] at (0,0) (mult) {*};
+  \node [draw, inner sep=1em] at (3,0) (add)  {+};
+
+  \node [color=blue] at (-.3, 1.5) (b) {$b(i)$};
+  \node [color=blue] at ( .3, 1.5) (g) {$\gamma$};
+  \node [color=blue] at (3.0, 1.5) (a) {$a(i)$};
+  \node [color=blue] at (5.0, 0.0) (c) {$c(i)$};
+
+  \draw [red, ->] (b) -- ($(b) - (0,.95)$);
+  \draw [red, ->] (g) -- ($(g) - (0,.95)$);
+  \draw [red, ->] (a) -- (add);
+  \draw [red, ->] (mult) -- (add);
+  \draw [red, ->] (add) -- (c);
+
+\end{tikzpicture}

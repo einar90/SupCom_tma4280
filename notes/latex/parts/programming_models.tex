@@ -1,0 +1,178 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Programming models} % (fold)
+\label{sec:programming_models}
+A node (with 16 physical processors) on Vilje represents a shared memory system where the aggregate memory for the node is globally available to all the 16 processors. A shared memory programming model (i.e., OpenMP) can therefore be used within a single node.
+
+If we want to develop programs which can run on more than one node, we need to use message-passing (i.e., MPI). Even though each node represents a shared memory system, the message-passing programming model may still be used within a node. However, the opposite is not true: a shared programming model cannot be used on a ``pure'' distributed memory system (e.g., on a PC cluster).
+
+Note that a system like vilje, which represents a shared memory system within a node, and a distributed memory system across the nodes, can also be programmed using both programming models within a single program.
+
+\subsection{MPI} % (fold)
+\label{sub:mpi}
+Message-passing is fundamentally processor-to-processor communication. Only a local, unique memory is directly available to each processor. Both local and remote processes must cooperate in order to exchange data and/or synchronize.
+
+Note that message-passing is a good way to use distributed shared memory machines (ccNUMA) because it provides a way to express memory/data locality.
+
+Some of the key advantages of the message-passing model are:
+\begin{description}
+  \item[Portability:]  The model can be used on a collection of homogeneous or heterogeneous processors connected by a fast or a slow communication network.
+  \item[Performance:] The approach exploits data locality, as well as the availability of a large, aggregate memory.
+  \item[Expressiveness:] A limited communication library suffices for most applications.
+\end{description}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/programming_models/mpi.pdf}
+  \caption{An illustration of the MPI programming model. We have several independent processes, and each of these processes have their own separate program flow.}
+  \label{fig:mpi}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/programming_models/mpi_message.pdf}
+  \caption{Illustration of the message passing model. A number of processes are coupled together via a communication network. Each process has a local and unique memory/cache. The processes communicate via explicit message passing. A
+message consists of an ``envelope'' which contains sufficient information about whether and when to open the message, as well as information regarding how to interpret the ``body'' of the message (the actual data).}
+  \label{fig:message}
+\end{figure}
+
+The MPI operations can be classified in four types of operations:
+\begin{enumerate}
+  \item One-to-one.
+  \item One-to-all.
+  \item All-to-one.
+  \item All-to-all.
+\end{enumerate}
+
+One-to-one operations are also referred to as point-to-point operations (send/receive), while the last three types are collective operations. When we say ``all'', we generally mean all processes $P_0, P_1, \dots, P_{n-1}$ in a group of $n$ processes. The default is to let all processes be members of the same default communicator; however they may also be divided into separate groups.
+
+The collective operations may also be broken down into two more categories:
+\begin{enumerate}[label=\alph*)]
+  \item Data movement: broadcast, gather/scatter.
+  \item Collective computation: min/max, sum, etc.
+\end{enumerate}
+
+\subsubsection{Six essential functions} % (fold)
+\label{ssub:six_essential_functions}
+\begin{description}
+  \item[\texttt{MPI\_Init}:] Must always be called first (before any other MPI functions).
+  \item[\texttt{MPI\_Finalize}:] Ensures a clean exit. Needs to be the last MPI function called.
+  \item[\texttt{MPI\_Comm\_size}:] Returns the total number of MPI processes.
+  \item[\texttt{MPI\_Comm\_rank}:] Returns the individual process number.
+  \item[\texttt{MPI\_Send}:] Send a specified amount of data of a particular data type to a specified process. May also specify a tag.
+  \item[\texttt{MPI\_Recv}:] Receive a specified amount of data of a particular data type from a specified process. May also specify a tag. This operation is blocking, and may therefore cause a deadlock.
+\end{description}
+The syntaxes for MPI\_Send and MPI\_Recv are shown in Figure~\ref{fig:mpi_send_recv}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/programming_models/mpi_send_recv.pdf}
+  \caption{The syntaxes for MPI\_Send and MPI\_Recv.}
+  \label{fig:mpi_send_recv}
+\end{figure}
+% subsubsection six_essential_functions (end)
+
+
+
+% subsection mpi (end)
+
+
+
+
+
+
+\subsection{OpenMP} % (fold)
+\label{sub:openmp}
+OpenMP is a C/Fortran language extension for programming shared memory parallel machines. It is much more easily implemented than the distributed memory model (MPI), but also poses challenges associated with sharing resources in multiple threads.
+
+It is built on the threading paradigm, combined with a parallel section view of the code. This means that the main program flow happens on \emph{one} processor only. The parallelization is based on a fork/join programming model, as illustrated in Figure~\ref{fig:openmp}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/programming_models/openmp.pdf}
+  \caption{An illustration of the OpenMP programming model. We only have a single process, hence the main program flow only happens on a single processor. In sections of the code that we have marked as parallel, the program forks into multiple threads which work independently. At the end of the parallel section, these threads join together again and the program flow is returned to the first processor.}
+  \label{fig:openmp}
+\end{figure}
+
+In MPI each process has its own private resources. With OpenMP, however, all threads have access to the \emph{same} resources; this is crucial to keep in mind when designating the parallel sections of the code, as the threads might be trying to write to the same memory location (buffer).
+
+\subsubsection{Critical sections} % (fold)
+\label{ssub:critical_sections}
+If for some reason we need the threads to be able to write to the same resources, this may be achieved by constructing a \emph{critical section} in the code. This lets threads requests locks of a mutex (mutual exclusion lock). When a thread has locked a section of the memory, it is unavailable to all other threads, making them wait for access. This implies a serialization of the program flow over the critical section, which is very bad for the parallel performance.
+% subsubsection critical_sections (end)
+
+\subsubsection{Operations suitable for OpenMP parallellization} % (fold)
+\label{ssub:operations_suitable_for_openmp_parallellization}
+Moderately large computation intensive operations are suitable for OpenMP parallellization. Since thread-dispatchment always has some costs attached, spawning multiple threads easily costs more time than what you gain by doing the calculations in parallel if the operations are too small.
+
+The computations must also be decoupled, since the threads are sharing resources.
+% subsubsection operations_suitable_for_openmp_parallellization (end)
+
+\subsubsection{Using OpenMP} % (fold)
+\label{ssub:using_openmp}
+The idea behind OpenMP is that we give the compiler instructions on which sections of code we want to be parallelized. This means that (unlike MPI) OpenMP requires specific support in the compiler. The compiler then handles the work division between the available number of threads. Note that these instructions are \emph{not} part of the programming language itself, in contrast to MPI.
+
+The instructions given to the compiler are known as \emph{pragma} commands. There are mainly two classes of OpenMP pragmas:
+\begin{enumerate}
+  \item Pragmas used in combination with loop constructs.
+  \item Pragmas used to specify sections of the code which are completely independent of each other.
+\end{enumerate}
+
+To parallelize a \texttt{for}-loop in C, we simply add one pragma command:
+\begin{lstlisting}
+#pragma omp parallel for schedule(static)
+for (int i=0; i<100; ++i)
+  DoSomething(i);
+\end{lstlisting}
+Here we are assuming that does not depend on any global resources, and that \texttt{DoSomething(i)} has a constant cost. The pragma can be broken down into three parts:
+\begin{description}
+  \item[\texttt{\#pragma omp}] All OpenMP directives start with this.
+  \item[\texttt{parallel for}] Instructs the compiler that we want the following \texttt{for} construct to be parallelized.
+  \item[\texttt{schedule static}] Instructs he compiler to hand each thread approximately the same number of loop iterations up front. This is a good solution here since (we have assumed that) each call to DoSomething(i) has the same cost. Hence such a simple division will give good load balancing between the threads.
+\end{description}
+
+In cases where each call to \texttt{DoSomething(i)} has a different cost we may end up with a poor load balancing between the threads (some threads be finish long before others). OpenMP has a mechanism to handle these situations: we simply use a different schedule parameter. We can for example do
+\begin{lstlisting}
+#pragma omp parallel for schedule(dynamic)
+for (int i=0; i<100; ++i)
+  DoSomething(i);
+\end{lstlisting}
+This instructs the compiler to use a dynamic workload division. One thread is then reserved as a bookkeeper/negotiator. Within this parallel section this thread has a simple task: keep track of which loop iterations have been performed and hand out a new one to a thread when it requests it.
+
+Note that this works well if \texttt{DoSomething} is fairly costly, but not if it is cheap. If it is cheap, the process of waiting for/handing out iterations may become dominating. We can overcome this by passing a second parameter to the scheduler: \texttt{schedule(dynamic, N)}, where \texttt{N} is the \emph{chunk size}, i.e. the maximum, number of loop iterations that will be handed out at a time. E.g. if \texttt{N=5}, 5 iterations will be handed out to each thread at a time.
+
+A third scheduling variant is \texttt{guided}. This is a variant of the \texttt{dynamic} scheduler where we start out with large chunk sizes. The chunk sizes are then exponentially decreased until we reach a minimum, as specified in the chunk size. The idea here is that allocating large chunks initially is good for performance, since these will typically overlap fairly well. However, when the number of loop iterations left is small, we may end up in a situation where all the remaining loop iterations are allocated to a single thread. This is bad for performance since the other threads would then be left idle. By using progressively smaller chunks, the chance of this happening is reduced.
+
+The second class of OpenMP directives is used to specify sections of the code which are completely independent of each other. If we for example have three functions which are independent of each other we can do
+\begin{lstlisting}
+#pragma omp parallel sections
+{
+  #pragma omp parallel section
+  {
+    DoJob1();
+  }
+  #pragma omp parallel section
+  {
+    DoJob2();
+  }
+  #pragma omp parallel section
+  {
+    DoJob2();
+  }
+}
+\end{lstlisting}
+Each section will then be performed in its own separate thread, before the program flow returns to procesor 0 once all sections have been completed.
+% subsubsection using_openmp (end)
+
+\subsubsection{Conclusions} % (fold)
+\label{ssub:conclusions}
+\begin{itemize}
+  \item OpenMP offers easy exploitation of computing resources on shared memory machines. The parallel code is very close to the serial code - it usually only differs by some pragma's which you can tell a compiler to ignore.
+  \item The fork-join programming model often is harder to grasp than the distributed model, in particular if several threads need to access the same resources.
+  \item Best results are usually achieved if you combine OpenMP and MPI. This is also the model that maps the best to modern hardware, where you typically have a few handfuls of cpu's sharing memory, while using more than that requires a distributed memory programming model.
+\end{itemize}
+% subsubsection conclusions (end)
+% subsection openmp (end)
+
+
+% section programming_models (end)

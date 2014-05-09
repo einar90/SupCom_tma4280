@@ -1,0 +1,7 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \draw [] (0,0) -- (7,0) node [anchor=west] {proc 0};
+  \draw [] (0,1) -- (7,1) node [anchor=west] {proc 1};
+  \draw [] (0,2) -- (7,2) node [anchor=west] {proc 2};
+\end{tikzpicture}

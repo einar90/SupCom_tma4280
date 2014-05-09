@@ -1,0 +1,82 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Cache} % (fold)
+\label{sec:cache}
+
+The main purpose of the cache is to keep copies of data in extra (fast) memory close to the CPU in order to ``hide'' the relatively slow transfer rate between the main memory and the processor.
+
+The cahce is smaller than the main memory by some power of two. Hence, a strategy for mapping memory locations to the cache is needed. One such strategy is direct mapping.
+
+\subsection{Direct mapping} % (fold)
+\label{sub:direct_mapping}
+
+With the direct mapping strategy, illustrated in Figure~\ref{fig:direct}, each location in main memory corresponds to a unique location in cache. Because only the first bits of the main memory address are used when we're mapping the blocks to cahce (Figure~\ref{fig:address}), we see that several main memory addresses map to the same cache address.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/cache/direct.pdf}
+  \caption{Each location in memory can be mapped to exactly one cahce line.}
+  \label{fig:direct}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/cache/memory-address.pdf}
+  \caption{The main memory address is split into two parts: the first bits are called the \emph{set bits}, and give the precise cache address. The remaining parts are the \emph{tag bits} and are used to determine if a copy of the content at the particular main memory location has been copied into the cache location given by the set bits.}
+  \label{fig:address}
+\end{figure}
+
+Note that, when a floating point number (or an integer) is requested by the program, more than a single number is copied into cache. The minimum amount of data copied is called a \emph{cache line}.
+% subsection direct_mapping (end)
+
+\subsection{Cache trashing} % (fold)
+\label{sub:cache_trashing}
+As stated in the above section, several addresses in main memory may map to the same address. This may cause problems if for examble we're adding two vectors $a,b$ to produce the vector $c$, which fill its own block in memory. If these blocks all map to the same cache line (and we're using direct mapping) they can never be in the cahce at the same time. They will need to be brought in from main memory every time, causing a severe drop in performance. This is called \emph{cache trashing}.
+
+Cache trashing may in this case be avoided by storing the vectors in a different manner, i.e.
+\begin{equation}
+\nonumber
+  a(1),b(1),c(1),(a2), (b2), c(2), \dots, a(n), b(n), c(n)
+\end{equation}
+instead of
+\begin{equation}
+  \nonumber
+  a(1),a(2),\dots,a(n),b(1),b(2),\dots, b(n), c(1), \dots
+\end{equation}
+% subsection cache_trashing (end)
+
+\subsection{$n$-way set-associative mapping} % (fold)
+\label{sub:_n_way_associative_mapping}
+An alternative strategy for mapping memory locations is $n$-way set-associative, illustrated in Figure~\ref{fig:cache-n-way}. Here there are $n$ ways to map a memory address to a cache address, i.e. a memory location can potentially end up in one of $n$ cache lines. The particural line chosen depends on the replacement policy:
+\begin{itemize}
+  \item Least Recently Used (LRU).
+  \item Least Frequently Used (LFU).
+  \item Random.
+\end{itemize}
+In the context the algorithms used in this course, LRU gives the best performance. This is because the problems exhibit locality in time and space.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/cache/n-way.pdf}
+  \caption{An illustration of $n$-way set-associative cache. Each block in memory can map to $n$ different locations in the cache.}
+  \label{fig:cache-n-way}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/cache/set-associative.pdf}
+  \caption{Set-associative mapping. The set part gives the set (1/2/3) the data is in; the tag gives the line within the set; the offset gives the location on the line.}
+  \label{fig:set-associative}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/cache/2-way.pdf}
+  \caption{2-way cache mapping. Each memory location can map to two different cache lines.}
+  \label{fig:label}
+\end{figure}
+% subsection _n_way_associative_mapping (end)
+
+
+
+% section cache (end)

@@ -1,0 +1,177 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Parallel I/O with MPI-I/O} % (fold)
+\label{sec:parallel_i_o_with_mpi_i_o}
+HDDs are normally used as secondary storages. Because HDDs only have a single head, it can only perform a single read/write operation at a time. This means that even though multiple processes can initiate reads concurrently, they will be performed in serial, as shown in Figure~\ref{fig:io_serial}. This can transform CPU bound problems to I/O bound problems.  We can improve the read performance by storing our data across multiple HDDs, as shown in Figure~\ref{fig:io_parallel}.
+
+When it comes to output from parallel processes there are several different approaches. A description of two approaches involving serialization follows.
+\begin{description}
+  \item[Post-mortem assembly:] Each process dumps its data to a separate file, and then custom tailored code is used to read the data into the next application in the computational chain (e.g. visualization). This approach requires doing significantly more I/O operations than necessary, and large parts of it needs to be done in serial.
+  \item[Serializing the I/O:] One process is given the responsibility of writing the data to disk. The other processes send their data to this process in a sequential manner. With this approach all output is written serially.
+\end{description}
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/io/serial_file.pdf}
+  \includegraphics[]{illustrations/io/serial_file_graph.pdf}
+  \caption{Illustration of serial I/O where multiple processes read from a single file.}
+  \label{fig:io_serial}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/io/parallel_file.pdf}
+  \includegraphics[]{illustrations/io/parallel_file_graph.pdf}
+  \caption{Illustration of parallel I/O where we harness the aggregated bandwidth of several devices. Each process reads its data from a separate physical device, enabling parallel I/O.}
+  \label{fig:io_parallel}
+\end{figure}
+
+\subsection{MPI-IO} % (fold)
+\label{sub:mpi_io}
+The MPI-IO interface allows us to split the output across multiple storage devices. It needs to be tuned to the underlying filesystem to achieve good performance; one such file system is GPFS (General Parallel FileSystem). Informing the system about the underlying distributed nature of an I/O call enables the system to make good choices about how the I/O is performed on a lower level.
+% subsection mpi_io (end)
+
+
+\subsubsection{Non-sequential I/O: Fileviews} % (fold)
+\label{ssub:non_sequential_i_o_fileviews}
+We now consider a vector split in a cyclic manner, as shown in Figure~\ref{fig:nonseqio}. We assume that each block consists of a small amount of data; for simplicity a single \texttt{double}. This means that, for each separate process, the data access pattern consists of a single number followed by a gap of $size-1$ numbers.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[]{illustrations/io/nonseqio.pdf}
+  \caption{Illustration of cyclic file writing. The $P_0$ block is written by $P_0$ etc.}
+  \label{fig:nonseqio}
+\end{figure}
+
+
+MPI has a builtin machinere to describe custom datatypes. These were originally intended to be used to describe data layout in memory, but they can also be used to describe data patterns on secondary storage. This datatype is constructed as follows:
+\begin{lstlisting}
+MPI_Datatype filetype;
+MPI_Type_create_resized(MPI_DOUBLE,          // Old type
+                        0,                   // Lower bound
+                        size*sizeof(double), // Extent
+                        &filetype            // Output datatype
+                        );
+MPI_Type_commit(&filetype);
+\end{lstlisting}
+
+We then attach this datatype as a process' \emph{view} into the file using the function
+\begin{lstlisting}
+MPI_File_set_view(fh,                  // File handle
+                  rank*sizeof(double), // Displacement from beginning of file,
+                  MPI_DOUBLE,          // Elementary data type
+                  filetype             // File data type (created above)
+                  'native',            // Data representation
+                  MPI_INFO_NULL        // Info structure (for tuning)
+                  );
+\end{lstlisting}
+
+The data is then written to secondary storage using a normal write call on each process:
+\begin{lstlisting}
+MPI_File_write(fh,               // File handle (with custom view now set)
+               vec,              // Buffer to be written
+               mysize,           // Number of elements to write (for this process)
+               MPI_DOUBLE,       // Datatype of each element
+               MPI_STATUS_IGNORE
+               );
+\end{lstlisting}
+
+The system takes care of inserting the gaps. Since it knows the data access patterns on each process up front, it can optimize how storing the data to disk is perfomed, with large writes and minimal seeks.
+% subsubsection non_sequential_i_o_fileviews (end)
+
+\subsubsection{Distributed arrays} % (fold)
+\label{ssub:distributed_arrays}
+In HPC applications the data is usually consists of matrices or 3D arrays; MPI containts machinery to partition such arrays in semi-automatic ways, and we can benefit from this when we want to write the data to secondary storage.
+
+There are essentially two ways to split an array across processes; these are shown in Figure~\ref{fig:splitting}. The MPI machinery allows us to handle both with essentially the same code. MPI calls such arrays \texttt{darrays} -- distributed arrays. An array partitioning consists of a topology (``descrition of how stuff is connected'') and a mapping of pocesses onto this topology.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/io/splitting.pdf}
+  \caption{Illustration of the two primary ways to partition a 2D matrix.}
+  \label{fig:splitting}
+\end{figure}
+% subsubsection distributed_arrays (end)
+
+Figure~\ref{fig:topology} contains all the pieces of information we need to descirbe a topology and mapping:
+\begin{itemize}
+  \item A global cartesian topology, expressed as the number of processes along each dimension (2,3).
+  \item Location of a particular domain in the topology; again this can be expressed as an integer along each dimension.
+  \item A mapping of the available processes onto the topology.
+\end{itemize}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/io/topology.pdf}
+  \caption{``Schematic'' of a topology mapping.}
+  \label{fig:topology}
+\end{figure}
+
+To realize this in MPI, we first generate a cartesian partitioning using \texttt{MPI\_Dims\_create}:
+\begin{lstlisting}
+int sizes = [2];
+sizes[0] = sizes[1] = 0;
+MPI_Dims_create(size, // Number of nodes in the grid
+                2,    // Number of cartesian dimensions
+                sizes // IN: Dims to partition over; OUT: Nodes in each dimension
+                );
+\end{lstlisting}
+The function only operates over dimensions where $sizes=0$, so if we instead wanted a strip partitioning we could just change the code to \texttt{sizes[0]=1}. On return, the \texttt{sizes} arrays contains the partitioning in each dimension.
+
+In order to be able to generate the mapping of processes onto the topology, we need to define a communicator which has the topology attached.
+\begin{lstlisting}
+int periodic[2];
+periodic[0] = periodic[1] = 0; // NOT periodic in both dimensions
+MPI_Comm comm;
+MPI_Cart_create(MPI_COMM_WORLD, // Input communicator
+                2,              // Number of cartesian dimensions
+                sizes,          // Number of processes in each dimension
+                periodic,       // Periodic (or not) in each dimension
+                0,              // Reordered (or not). Here not.
+                &comm           // Output communicator
+                );
+\end{lstlisting}
+Upon return the \texttt{comm} variable holds the new communicator.
+
+The individual processes can now query where they are placed in the topology using the function:
+\begin{lstlisting}
+int coords[2];
+MPI_Cart_coords(comm, // Communicator
+                rank, // Rank of process
+                2,    // Max dims (length of coords)
+                coords // OUT: Coordinates in grid
+                );
+\end{lstlisting}
+On process 5 this would return a \texttt{coords} array containing 1 and 2.
+
+We can now use the \texttt{MPI\_Type\_create\_darray} function to generate the datatype and file view on each process:
+\begin{lstlisting}
+MPI_Type_create_darray(size,     // Size of process group
+                       rank,     // Rank in process group
+                       dims,     // #array dimensions/process grid dimensions
+                       gsizes,   // #elements of old type in each dim (global)
+                       distribs, // Distribution strategies in each dimesnsion
+                       dargs,    // Distribution strategy
+                       sizes,    // Size of process grid in each dimension
+                       order,    // Array layout in memory
+                       etype,    // Type of array entries
+                       newtype   // New type (OUT)
+                       );
+MPI_Type_commit(&newtype);
+\end{lstlisting}
+
+\subsubsection{Non-blocking I/O -- Overlapping I/O and computations} % (fold)
+\label{ssub:non_blocking_i_o_overlapping_i_o_and_computations}
+On modern architectures HDDs can write/read data completely on their own using a technique known as \emph{Direct Memory Access}. Likewise, network components can do the same (if the HDDs are not locally attached). This means that while we are reading/writing data, the CPU is mostly an idle observer. This is bad for program efficiency - we want to keep the CPUs saturated with work.
+
+MPI offers facilities to remedy this, namely non-blocking I/O operations.
+
+% TODO
+
+% subsubsection non_blocking_i_o_overlapping_i_o_and_computations (end)
+
+
+
+
+% section parallel_i_o_with_mpi_i_o (end)

@@ -1,0 +1,36 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node[draw, ellipse, text=red] (message) at (0,0) {message};
+
+  \node [draw, ellipse] (P0) at (-3,-2) {$P_0$}; % Process node 0
+  \node [draw, ellipse] (P1) at (-2, 1) {$P_1$}; % Process node 1
+  \node [draw, ellipse] (P2) at (-1,-2) {$P_2$}; % Process node 2
+  \node [draw, ellipse] (P3) at (1 , 2) {$P_3$}; % Process node 3
+
+  \node [fit=(P0)(P1)(P2)(P3), draw] (communicator) {}; % communicator frame
+  \node [anchor=south west         ] at (communicator.north west) {communicator}; % communicator label
+
+  \node [draw, rectangle split, rectangle split parts=2, rectangle split draw splits=false]
+        (node-PC) at (-3,-6) {\$ \nodepart{second} P}; % Processor node
+  \draw [densely dashed] (node-PC.text split west) -- (node-PC.text split east); % P/$ divider
+  \node [draw] (node-M)  at ($ (node-PC.text west) + (-2,0) $) {M}; % Memory node
+  \draw [] (node-PC.text west) -- (node-M) node [midway] (pc-m-mid) {}; % Processor/memory connector
+  \node [draw] (node-IO) at ($ (pc-m-mid) + (0,1) $) {I/O}; % I/O node
+  \draw [] (pc-m-mid.center) -- (node-IO.south); % IO connector
+
+  \node [fit=(node-PC)(node-M)(node-IO), draw, ellipse] (process) {}; % Process frame
+
+  \node [draw, ellipse, text=red] (body) at (4, -6) {body (data)}; % Message body
+  \node [text=red] (envelope-label) at ($ (body.south) + (0,-.5) $) {envelope}; % Envelope label
+  \node [fit=(body)(envelope-label), draw, ellipse] (envelope) {}; % Envelope frame
+
+  \draw [bend left] (process.north) to (P0.south west);
+  \draw [bend right] (envelope.north) to (message.east);
+
+  \draw [bend right, ->] (P2.east) to (message.south);
+  \draw [bend right, ->] (message.north) to (P1.east);
+
+
+
+\end{tikzpicture}

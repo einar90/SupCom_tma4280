@@ -1,0 +1,35 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Pipelining} % (fold)
+\label{sec:pipelining}
+
+
+Lets say we want to add the three vectors $\vec{a}, \vec{b}$ of lenght $n$ and store the result in vector $\vec{c}$:
+\begin{equation}
+  \vec{c} = \vec{a} + \vec{b}
+\end{equation}
+
+Normally, each of the $n$ additions takes five clock cycles:
+\begin{enumerate}
+  \item Read from register.
+  \item Align.
+  \item Add.
+  \item Pack.
+  \item Write to register.
+\end{enumerate}
+which means that we could expect that the total number of clock cycles required for the operation is $5n$ and that the total execution time is $5n\tau$. However, by using pipelining, we can get this down to $n\tau$ for $n\gg 1$. This is because pipelining lets us start reading the next pair of numbers from the register while we're aligning the previous two, etc. After a startup time, we will then get one value $c(i)$ pr. clock cycle.
+% section pipelining (end)
+
+\subsection{Superscalar operations} % (fold)
+\label{sub:superscalar_operations}
+Superscalar operations means that two operations are chained together in a pipeline; e.g. multiply and add as shown in Figure~\ref{fig:superscalar}. This works in approximately the same way as pipelining in general; but we will after a slightly longer time get two floating point operations pr. clock cycle (theoretically).
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[]{illustrations/processor/superscalar.pdf}
+  \caption{The superscalar operation multiply and add.}
+  \label{fig:superscalar}
+\end{figure}
+
+% subsection superscalar_operations (end)

@@ -1,0 +1,15 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \draw [] (0 ,0) -- (2 ,0) node [anchor=south, midway] {proc 0};
+  \draw [] (2 ,0) -- (10,0) node [anchor=south, midway] {proc 0};
+  \draw [] (10,0) -- (12,0) node [anchor=south, midway] {proc 0};
+
+  \draw [] (2 ,0) -- (4 ,1) node [anchor=south, midway] {      };
+  \draw [] (4 ,1) -- (8 ,1) node [anchor=south, midway] {proc 1};
+  \draw [] (8 ,1) -- (10,0) node [anchor=south, midway] {      };
+
+  \draw [] (2 ,0 ) -- (4 ,-1) node [anchor=south, midway] {      };
+  \draw [] (4 ,-1) -- (8 ,-1) node [anchor=south, midway] {proc 2};
+  \draw [] (8 ,-1) -- (10,0 ) node [anchor=south, midway] {      };
+\end{tikzpicture}

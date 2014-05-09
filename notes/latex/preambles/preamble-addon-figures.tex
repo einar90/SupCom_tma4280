@@ -6,6 +6,8 @@
 \usepackage{tikz,pgfplots}
 \pgfplotsset{compat=1.9}
 \usetikzlibrary{calc}
+\usetikzlibrary{fit}
+\usetikzlibrary{shapes,snakes}
 \usetikzlibrary{arrows,decorations.markings}
 
 % Vector Styles for drawings
@@ -48,3 +50,33 @@
         }
     }
 }
+
+\tikzset{rectangle split h/.style={
+    draw, rectangle split, rectangle split parts=#1, rectangle split horizontal
+}}
+
+
+\tikzset{underbrace/.style={
+    thick,
+    decoration={
+        brace,
+        mirror,
+    },
+    decorate
+}}
+
+\tikzset{overbrace/.style={
+    thick,
+    decoration={
+        brace,
+    },
+    decorate
+}}
+
+\tikzset{overbrace label/.style={
+    pos=0.5,anchor=south,yshift=0.2cm
+}}
+
+\tikzset{underbrace label/.style={
+    pos=0.5,anchor=north,yshift=-0.2cm
+}}

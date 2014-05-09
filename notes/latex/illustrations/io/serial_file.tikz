@@ -1,0 +1,27 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node[rectangle split h=5, rounded corners, inner sep=.8em] (file)
+                                             {$d_0$
+                                              \nodepart{two}   $d_1$
+                                              \nodepart{three} $d_2$
+                                              \nodepart{four}  $d_3$
+                                              \nodepart[text width=3cm]{five}  };
+
+  \node [draw, rounded corners, inner sep=.8em] (p0) at  (-3.0,2) {$d_0$};
+  \node [draw, rounded corners, inner sep=.8em] (p1) at  (-1.5,2) {$d_1$};
+  \node [draw, rounded corners, inner sep=.8em] (p2) at  ( 0.0,2) {$d_2$};
+  \node [draw, rounded corners, inner sep=.8em] (p3) at  ( 1.5,2) {$d_3$};
+
+  \node [anchor=south] at (p0.north) {$P_0$};
+  \node [anchor=south] at (p1.north) {$P_1$};
+  \node [anchor=south] at (p2.north) {$P_2$};
+  \node [anchor=south] at (p3.north) {$P_3$};
+
+  \draw [->] (file.one   north) -- (p0.south);
+  \draw [->] (file.two   north) -- (p1.south);
+  \draw [->] (file.three north) -- (p2.south);
+  \draw [->] (file.four  north) -- (p3.south);
+
+  \node [anchor=north] at (file.south) {HDD};
+\end{tikzpicture}

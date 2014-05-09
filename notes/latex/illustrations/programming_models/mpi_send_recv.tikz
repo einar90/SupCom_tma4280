@@ -1,0 +1,44 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node [anchor=west,
+         rectangle split,
+         rectangle split parts=8,
+         rectangle split horizontal] (send) at (0,0)
+         {                MPI\_Send (
+         \nodepart{two}   buffer,
+         \nodepart{three} count,
+         \nodepart{four}  datatype,
+         \nodepart{five}  dest,
+         \nodepart{six}   tag,
+         \nodepart{seven} comm
+         \nodepart{eight} );};
+
+  \draw [thick, decoration={brace, mirror, raise=0.3cm}, decorate] (send.one split) -- (send.four split)
+    node [pos=0.5,anchor=north,yshift=-0.55cm] {data};
+
+  \draw [thick, decoration={brace, mirror, raise=0.3cm}, decorate] (send.four split) -- (send.seven split)
+    node [pos=0.5,anchor=north,yshift=-0.55cm] {envelope};
+
+
+
+    \node [anchor=west,
+         rectangle split,
+         rectangle split parts=9,
+         rectangle split horizontal] (recv) at (0,-2)
+         {                MPI\_Recv (
+         \nodepart{two}   buffer,
+         \nodepart{three} count,
+         \nodepart{four}  datatype,
+         \nodepart{five}  source,
+         \nodepart{six}   tag,
+         \nodepart{seven} comm,
+         \nodepart{eight} \&status
+         \nodepart{nine} );};
+
+  \draw [thick, decoration={brace, mirror, raise=0.3cm}, decorate] (recv.one split) -- (recv.four split)
+    node [pos=0.5,anchor=north,yshift=-0.55cm] {data};
+
+  \draw [thick, decoration={brace, mirror, raise=0.3cm}, decorate] (recv.four split) -- (recv.eight split)
+    node [pos=0.5,anchor=north,yshift=-0.55cm] {envelope};
+\end{tikzpicture}

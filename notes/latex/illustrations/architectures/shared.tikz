@@ -1,0 +1,38 @@
+% -*- root: ../../supcom.tex -*-
+
+
+%
+\begin{tikzpicture}[thick, inner sep=0pt, minimum size=0.5cm]
+  \node [text=red, draw, minimum width=6cm] (interconnect) at (0,0) {interconnect};
+
+  \node [three sided top                 ] (C1) at (-2,1)  { \$ };
+  \node [three sided bottom, anchor=south] (P1) at (C1.north)  { P };
+  \draw [densely dotted] (P1.south west) -- (P1.south east);
+  \draw [] (C1.south) -- ($(interconnect.north) + (-2,0)$);
+
+  \node [three sided top                 ] (C2) at (0,1)  { \$ };
+  \node [three sided bottom, anchor=south] (P2) at (C2.north)  { P };
+  \draw [densely dotted] (P2.south west) -- (P2.south east);
+  \draw [] (C2.south) -- ($(interconnect.north) + (0,0)$);
+
+  \node [three sided top                 ] (C3) at (2,1)  { \$ };
+  \node [three sided bottom, anchor=south] (P3) at (C3.north)  { P };
+  \draw [densely dotted] (P3.south west) -- (P3.south east);
+  \draw [] (C3.south) -- ($(interconnect.north) + (2,0)$);
+
+
+  \node [draw] (M1) at (-2,-1) {M};
+  \draw [] (M1.north) -- ($(interconnect.south) + (-2,0)$);
+
+  \node [draw] (M2) at (0,-1) {M};
+  \draw [] (M2.north) -- ($(interconnect.south) + (0,0)$);
+
+  \node [draw] (M3) at (2,-1) {M};
+  \draw [] (M3.north) -- ($(interconnect.south) + (2,0)$);
+
+
+
+
+
+
+\end{tikzpicture}

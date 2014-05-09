@@ -1,0 +1,5 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node [rectangle split h=3, inner sep=.5em] {tag \nodepart{two} data block \nodepart{three} flag bits};
+\end{tikzpicture}

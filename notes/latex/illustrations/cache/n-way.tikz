@@ -1,0 +1,34 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node [draw, fill=black] (r) at (4,.5) {};
+
+  \draw [thick] (0,0) -- (10,0);
+  \draw [thick] (0,1) -- (10,1);
+  \draw [thick] (0,0) -- (0,1);
+
+  \node [] at (-1,.5) {RAM};
+
+  \draw [fill=lightgray] (0,6.0) rectangle (5,5.5);
+  \draw [fill=lightgray] (0,5.5) rectangle (5,5.0);
+  \draw [fill=lightgray] (0,5.0) rectangle (5,4.5);
+
+  \node [draw, fill=black] (c1) at (.5,5.75) {};
+  \node [draw, fill=black] (c2) at (.5,5.25) {};
+  \node [draw, fill=black] (c3) at (.5,4.75) {};
+
+  \draw [thick, color=blue] (0,3) -- (5,3);
+  \draw [thick, color=blue] (0,6) -- (5,6);
+  \draw [thick, color=blue] (0,3) -- (0,6);
+  \draw [thick, color=blue] (5,3) -- (5,6);
+
+  \draw [red, -latex] (r) -- (c1);
+  \draw [red, -latex] (r) -- (c2);
+  \draw [red, -latex] (r) -- (c3);
+
+  \draw [bend left] (3.35,1.5) to (7,3);
+
+  \node [rectangle split, rectangle split parts=2] at (8.5,3) {$n$ ways to map
+                                              \nodepart{two} a memory address};
+
+\end{tikzpicture}

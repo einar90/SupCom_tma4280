@@ -1,0 +1,31 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node [] at (0,2.3) {RAM};
+  \node [] at (4,2.3) {Cache};
+  \node [draw, rectangle split, rectangle split parts=8] (ram) at (0,0)
+                                          {Index 0
+                                          \nodepart{two} Index 1
+                                          \nodepart{three} Index  2
+                                          \nodepart{four} Index 3
+                                          \nodepart{five} Index 4
+                                          \nodepart{six} Index 5
+                                          \nodepart{seven} Index 6
+                                          \nodepart{eight} ...
+                                          };
+
+  \node [draw, rectangle split, rectangle split parts=4] (cache) at (4,.9)
+                                          {Index 0
+                                          \nodepart{two} Index 1
+                                          \nodepart{three} Index 2
+                                          \nodepart{four} Index 3
+                                          };
+
+  \draw [red, ->] (ram.one east) -- (cache.one west);
+  \draw [red, ->] (ram.two east) -- (cache.two west);
+  \draw [red, ->] (ram.three east) -- (cache.three west);
+  \draw [red, ->] (ram.four east) -- (cache.four west);
+  \draw [blue, ->] (ram.five east) -- (cache.one west);
+  \draw [blue, ->] (ram.six east) -- (cache.two west);
+  \draw [blue, ->] (ram.seven east) -- (cache.three west);
+\end{tikzpicture}

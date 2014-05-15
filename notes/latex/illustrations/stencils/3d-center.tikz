@@ -1,0 +1,25 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+
+
+    \shadedraw [ultra thick, blue] (0,0,0) -- ( 0, 0,-1.5);
+
+    \shadedraw[shading=ball,ball color=gray, white] ( 0, 0,-1.5) circle (.27);
+    \draw [fill=green!20, fill opacity=0.5, draw opacity=0] (-1.5,-1.5,0) rectangle (1.5,1.5,0);
+
+    \shadedraw [ultra thick, blue] (0,0,0) -- ( 1.5, 0, 0);
+    \shadedraw [ultra thick, blue] (0,0,0) -- (-1.5, 0, 0);
+    \shadedraw [ultra thick, blue] (0,0,0) -- ( 0, 1.5, 0);
+    \shadedraw [ultra thick, blue] (0,0,0) -- ( 0,-1.5, 0);
+    \shadedraw [ultra thick, blue] (0,0,0) -- ( 0, 0, 1.5);
+
+    \shadedraw[shading=ball,ball color=gray, white] ( 0, 0, 1.5) circle (.33);
+    \shadedraw[shading=ball,ball color=red,  white] ( 0, 0, 0) circle (.3);
+    \shadedraw[shading=ball,ball color=gray, white] ( 1.5, 0, 0) circle (.3);
+    \shadedraw[shading=ball,ball color=gray, white] (-1.5, 0, 0) circle (.28);
+    \shadedraw[shading=ball,ball color=gray, white] ( 0, 1.5, 0) circle (.3);
+    \shadedraw[shading=ball,ball color=gray, white] ( 0,-1.5, 0) circle (.3);
+
+
+\end{tikzpicture}

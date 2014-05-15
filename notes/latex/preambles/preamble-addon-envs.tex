@@ -5,7 +5,7 @@
 
 \usepackage[amsmath,thmmarks,framed]{ntheorem} % Used to define environments
 \usepackage{framed} % -------------------------| Used for framed environments
-\usepackage{pstricks} % -----------------------| Used for shaded environments
+% \usepackage{pstricks} % -----------------------| Used for shaded environments -- Causes problems with transparent tikz images
 \definecolor{env-gray}{rgb}{0.9,0.9,0.9}
 
 % Examples environment
@@ -35,6 +35,7 @@
 
 % Question environment
 \theoremstyle{nonumberbreak}
+\theoremprework{\kern-1em}
 \theoremframepreskip{\topsep}
 \theoremframepostskip{\topsep}
 \theoreminframepreskip{0.8em}

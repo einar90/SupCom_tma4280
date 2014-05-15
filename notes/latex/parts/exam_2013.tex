@@ -8,6 +8,7 @@
 \subsubsection{Approaches to parallelizing a program} % (fold)
 \label{ssub:approaches_to_parallelizing_a_program}
 
+
 \begin{question}
   \textbf{a)} We have considered two ways of parallelizing a program in the course. Outline the two different ways and explain how they relate to different hardware architectures.
 \end{question}
@@ -25,6 +26,7 @@ Note that these two different implementations may be combined. E.g. for a system
 \subsubsection{MPI functions} % (fold)
 \label{ssub:mpi_functions}
 
+
 \begin{question}
   MPI is a library we have considered much in the course. It consists of more than a hundred functions. Explain how these can be grouped into four categories, and how you can use the operations from these four categories to create any communication pattern.
 \end{question}
@@ -41,6 +43,7 @@ By ``all'' we mean all processes within a communicator consisting of a certain n
 
 \subsubsection{OpenMP: shared buffer} % (fold)
 \label{ssub:openmp_shared_buffer}
+
 
 \begin{question}
   OpenmP is another approach we have studied in the course. Consider the following piece of code
@@ -63,6 +66,7 @@ The results will be inconsistent because all the threads share the same memory, 
 \subsubsection{MPI-I/O} % (fold)
 \label{ssub:mpi_i_o}
 
+
 \begin{question}
   Explain how you can use MPI-I/O to store a multi-dimensional, parallel array to disk in a single operation.
 \end{question}
@@ -80,6 +84,7 @@ Because the system knows the data access patterns on each process up front, it c
 \subsection{Problem 2} % (fold)
 \label{sub:problem_2}
 
+
 \begin{question}
   We here consider the solution of a 2D Helmholtz problem with homogenous Dirichlet boundary conditions on the unit square;
 
@@ -96,6 +101,7 @@ Because the system knows the data access patterns on each process up front, it c
 
 \subsubsection{Gauss-Jacobi using functions} % (fold)
 \label{ssub:gauss_jacobi_using_functions}
+
 
 \begin{question}
   Explain why and how you can avoid forming the matrix if you employ Gauss-Jacobi iterations to solve this problem.
@@ -117,6 +123,7 @@ Finally we can simply gather the computed $u$ vector on the root process.
 
 \subsubsection{Speedup and efficiency} % (fold)
 \label{ssub:speedup_and_efficiency}
+
 
 \begin{question}
   Give parallel speedup and efficiency estimates. You can assume a simple linear network model:
@@ -167,6 +174,7 @@ Asymptotically we need $2n^2 + n \asymp 2n^2$ operations to perform the converge
 \subsubsection{Applicability of the FST Poisson solver} % (fold)
 \label{ssub:applicability_of_fst}
 
+
 \begin{question}
   The fast sine transform based Poisson solver considered in the course is aplicable to any elliptic equation. \textbf{True/False}.
 \end{question}
@@ -177,6 +185,7 @@ Asymptotically we need $2n^2 + n \asymp 2n^2$ operations to perform the converge
 \subsubsection{MPI vs. OpenMP} % (fold)
 \label{ssub:mpi_vs_openmp}
 
+
 \begin{question}
   Eventually, OpenMP will replace MPI as the preferred standard for parallel computing. \textbf{True/False}.
 \end{question}
@@ -186,6 +195,7 @@ Asymptotically we need $2n^2 + n \asymp 2n^2$ operations to perform the converge
 
 \subsubsection{Smallest number: \texttt{float} vs \texttt{double}} % (fold)
 \label{ssub:smallest_number_tt}
+
 \begin{question}
   You can represent smaller numbers using double precision than single precision. \textbf{True/False}.
 \end{question}
@@ -262,6 +272,7 @@ So we see that, whichever way we enterpret ``smallest number'', double precision
 \subsubsection{Cancellation} % (fold)
 \label{ssub:cancellation}
 
+
 \begin{question}
   Cancellation is a concern when adding floating point numbers. \textbf{True/False}.
 \end{question}
@@ -271,6 +282,7 @@ So we see that, whichever way we enterpret ``smallest number'', double precision
 
 \subsubsection{N-way cache} % (fold)
 \label{ssub:n_way_cache}
+
 
 \begin{question}
   Processors with N-way cache cannot be superscalar.
@@ -288,6 +300,7 @@ So we see that, whichever way we enterpret ``smallest number'', double precision
 \subsubsection{OpenMP scheduling} % (fold)
 \label{ssub:openmp_scheduling}
 
+
 \begin{question}
   A code consists of a \texttt{for}-loop with a big difference in cost between each iteration. If we are to do this loop in parallel using OpenMP, a ``guided'' scheduling mode is a good choice. \textbf{True/False.}
 \end{question}
@@ -298,6 +311,7 @@ So we see that, whichever way we enterpret ``smallest number'', double precision
 \subsubsection{Parallel performance vs. code optimization} % (fold)
 \label{ssub:parallel_performance_vs_code_optimization}
 
+
 \begin{question}
   It is easier to get good parallel efficiency on a well-optimized code. \textbf{True/False}.
 \end{question}
@@ -307,6 +321,7 @@ So we see that, whichever way we enterpret ``smallest number'', double precision
 
 \subsubsection{Generality of domain decomposition} % (fold)
 \label{ssub:generality_of_domain_decomposition}
+
 
 \begin{question}
   When solving a linear system of equations, domain decomposition methods are preferred in parallel due to the generality. \textbf{True/False}.

@@ -1,0 +1,124 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Exercise 1} % (fold)
+\label{sec:exercise_1}
+
+\subsection{Problem 1: Floating point representation 1} % (fold)
+\label{sec:exercise_1}
+\begin{question}
+  \emph{Consider the maximum and minimum numbers derived in (6)-(7). How many digits should we include in each of these numbers?}
+\end{question}
+The maximum and minimum numbers that can be represented using single precision floating point numbers are as follows:
+\begin{align}
+  V_{max} = 1\cdot 2^{254-127}\cdot 2 & = 3.40\ldots 10^{38} \\
+  V_{min} = 1\cdot 2^{1-127}\cdot 1   & = 1.17\ldots \cdot 10^{-38}
+\end{align}
+
+The fraction of the mantissa is represented using 23 bits, meaning that the smallest number we can represent is $2^-23 = 1.19\cdot 10^-7$ (the number has to ``start with'' 1). This implies that we have about 7 digits of accuracy, which implies we should include 7 digits in the maximum and minimum numbers derived above.
+% section exercise_1 (end)
+
+
+\subsection{Exercise 2: Floating point representation 2} % (fold)
+\label{sec:ecercise_2}
+\begin{question}
+  \emph{Find the binary foating point representation of the decimal number 4.25 in single precision.}
+\end{question}
+\begin{align}
+  4.25        = & 1\cdot 2^2 + 0 \cdot 2^1 + 0\cdot 2^{-1} + 1\cdot 2^{-2} \\
+  (4.25)_{10} = & (100.01)_2 \\
+              = & (1.0001)_2 \cdot 2^2
+\end{align}
+
+If we want to write it on the following form
+\begin{equation}
+  V = (-1)^S \cdot 2^{E-B} \cdot M
+\end{equation}
+we have that $S=0, E-B=2, B=127, E=129$,
+\begin{align}
+  S = & 0 \\
+  E-B = & 2 \implies E=B+2=127+2=129
+\end{align}
+and in binary:
+\begin{align}
+  M = & (1.0001)_2 \\
+  E = & (128 + 1)_{10} = (10000000)_2 + (1)_2 = (10000001)_2
+\end{align}
+where the leadning bit of $M$ is implicit in the representation. Hence, the floating point representation is:
+
+\bigskip
+\begin{center}
+  \begin{tabular}{|c|c|c|}
+    \hline
+    S & E & M \\
+    \hline
+    0 & 10000001 & 000100 --- 0 \\
+    \hline
+  \end{tabular}
+\end{center}
+% section ecercise_2 (end)
+
+
+\subsection{Problem 3: Floating point representation 3} % (fold)
+\label{sec:exercise_3}
+\begin{question}
+  \emph{How many digits of accuracy does a foating point number in double precision have?
+}
+\end{question}
+The mantissa of a double precision floating point number is represented using 52 bits. $2^{-52} = 2.2\cdot 10^{-16}$, we therefore have 16 digits of accuracy.
+% section exercise_3 (end)
+
+
+\subsection{Problem 4: Integer representation} % (fold)
+\label{sec:exercise_4}
+\begin{question}
+  \emph{An integer is typically represented using 32 bits, which implies a range of $\pm 2^{31} \approx \pm 2\cdot 10^9$. This means that when a loop needs to be done $n$ times, $n$ must be less than  $\approx 10^9$. How can we overcome this limitation?}
+\end{question}
+
+One solution is to surround the loop with another loop, where the inner loop only goes up to $\approx 10^9$.
+
+We can also use data type employing more than 32 bits to represent the integer e.g. \texttt{long} in C. A 64-bit representation would allow a range $\pm 2^{63} = 9\cdot 10^18$, which should be enough.
+% section exercise_4 (end)
+
+
+\subsection{Problem 5: Floating point performance} % (fold)
+\label{sec:exercise_5}
+\begin{question}
+  \emph{ Let $c$ be a scalar (a floating point number), let $\bar{x}$, $\bar{y}$, and $\bar{z}$ be vectors, each comprising $n$  floating point numbers, and let $\bar{A}$ be an $n\times n$ matrix. How many floating point operations does it take to perform the following basic linear algebra operations: $\bar{z} = \bar{x} + c \bar{y}$? What about the matrix-vector product $\bar{y} = \bar{A}\bar{x}$?}
+\end{question}
+
+$\bar{z} = \bar{x} + c \bar{y}$ requires $n$ multiplications and $n$ additions, so
+\begin{equation}
+  \mathcal{N}_{ops} = n + n = 2n
+\end{equation}
+
+$\bar{y} = \bar{A}\bar{x}$ requires $n$ multiplications and $n-1$ additions to compute each component im $\bar{y}$:
+\begin{equation}
+  \mathcal{N}_{ops} = n(n+(n-1)) = n(2n-1) \simeq 2n^2 = \mathcal{O}(n^2)
+\end{equation}
+% section exercise_5 (end)
+
+
+\subsection{Problem 6: Storage requirement} % (fold)
+\label{sec:exercise_6_storage_requirement}
+\begin{question}
+  \emph{ Let $\bar{A}$ be an $n \times n$ matrix, and $\bar{x}$ and $\bar{b}$ be two vectors of length $n$. Assume that we want to solve the linear system of equations $\bar{A} \bar{x} = \bar{b}$ using Gaussian elimination. Assume further that the matrix $\bar{A}$ is dense, meaning that we need to store all the $n^2$ entries in the matrix. }
+
+  \emph{What is (approximately) the largest equation system we can solve (i.e., the largest number of $n$ we can use) and still be able to fit the whole problem in the main memory, which we assume is 1 Gbyte?}
+\end{question}
+
+We can fit $10^9 / 8 = 125 \cdot 10^6$ floats in the memory. For any very large $n$, we need to store $n^2+2n \simeq n^2$ floats. So assuming we use the entire memory to store the floats, the larges value of $n$ we can have approximately $\sqrt{125\cdot 10^6} \approx 11180$. Hence, we can only solve a problem with approximately $10^4$ unknowns.
+
+
+% section exercise_6_storage_requirement (end)
+
+\subsection{Matrix multiplication program} % (fold)
+\label{sec:matrix_multiplication_program}
+\lstinputlisting[%
+  caption={matmult.c},
+  label={lst:matmult.c},
+  language={C}]
+  {code/ex1/matmult.c}
+% section matrix_multiplication_program (end)
+
+
+% section exercise_1 (end)

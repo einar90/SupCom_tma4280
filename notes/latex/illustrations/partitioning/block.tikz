@@ -1,0 +1,83 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+
+  % A: left brace
+  \draw [] (0,-1.5) -- (0,1.5);
+  \draw [] (0,-1.5) -- (.2,-1.5);
+  \draw [] (0,1.5) -- (.2,1.5);
+
+  % A: right brace
+  \draw [] (3,-1.5) -- (3,1.5);
+  \draw [] (3,1.5) -- (2.8,1.5);
+  \draw [] (3,-1.5) -- (2.8,-1.5);
+
+  % A: col dividers
+  \draw [dotted] (1,-1.5) -- (1,1.5);
+  \draw [dotted] (2,-1.5) -- (2,1.5);
+
+  % A: row dividers
+  \draw [dotted] (0,.5) -- (3,.5);
+  \draw [dotted] (0,-.5) -- (3,-.5);
+
+  % A: P labels
+  \node at (.5,1) {$P_0$};
+  \node at (1.5,1) {$P_1$};
+  \node at (2.5,1) {$P_2$};
+  \node at (.5,0) {$P_3$};
+  \node at (1.5,0) {$P_4$};
+  \node at (2.5,0) {$P_5$};
+  \node at (.5,-1) {$P_6$};
+  \node at (1.5,-1) {$P_7$};
+  \node at (2.5,-1) {$P_8$};
+
+  % A: label
+  \node at (1.5, 2) {$\mathbf{A}$};
+
+  % x: left brace
+  \draw [] (3.5,-1.5) -- (3.5,1.5);
+  \draw [] (3.5,-1.5) -- (3.7,-1.5);
+  \draw [] (3.5,1.5) -- (3.7,1.5);
+
+  % x: right brace
+  \draw [] (4.5,-1.5) -- (4.5,1.5);
+  \draw [] (4.5,-1.5) -- (4.3,-1.5);
+  \draw [] (4.5,1.5) -- (4.3,1.5);
+
+  % x: row dividers
+  \draw [dotted] (3.5,.5) -- (4.5,.5);
+  \draw [dotted] (3.5,-.5) -- (4.5,-.5);
+
+  % x: part labels
+  \node at (4,1) {$x_0$};
+  \node at (4,0) {$x_1$};
+  \node at (4,-1) {$x_2$};
+
+  % x: label
+  \node at (4,2) {$\mathbf{x}$};
+
+  % equal sign
+  \node at (5,0) {$=$};
+
+  % u: left brace
+  \draw [] (5.5,-1.5) -- (5.5,1.5);
+  \draw [] (5.5,-1.5) -- (5.7,-1.5);
+  \draw [] (5.5,1.5) -- (5.7,1.5);
+
+  % u: right brace
+  \draw [] (6.5,-1.5) -- (6.5,1.5);
+  \draw [] (6.5,-1.5) -- (6.3,-1.5);
+  \draw [] (6.5,1.5) -- (6.3,1.5);
+
+  % u: row dividers
+  \draw [dotted] (5.5,.5) -- (6.5,.5);
+  \draw [dotted] (5.5,-.5) -- (6.5,-.5);
+
+  % u: part labels
+  \node at (6,1) {$u_0$};
+  \node at (6,0) {$u_1$};
+  \node at (6,-1) {$u_2$};
+
+  % u: label
+  \node at (6,2) {$\mathbf{u}$};
+\end{tikzpicture}

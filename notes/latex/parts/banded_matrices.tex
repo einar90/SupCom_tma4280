@@ -1,0 +1,92 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Banded matrices} % (fold)
+\label{sec:banded_matrices}
+
+A banded matrix is a sparse matrix whose non-zero entries are confined to a diagonal band, comprising the main diagonal and zero or more diagonals on either side.
+
+\subsection{Matrix bandwidth} % (fold)
+\label{sub:matrix_bandwidth}
+Formally, consider an $n\times n$ matrix $\mathbf{A}=(a_{i,j})$. If all matrix elements are zero outside a diagonally bordered band whose range is determined by constants $k_1$ and $k_2$:
+\[
+  a_{i,j} = 0 \; \text{if} \; j < i-k_1 \quad \text{or} \quad j > i + k_2; \quad k_1, k_2 > 0
+\]
+then the quantities $k_1$ and $k_2$ are called the \emph{left} and \emph{right half-bandwidth}, respectively. The \emph{bandwidth} $b$ of the matrix is
+\begin{equation}
+  b = k_1+k_2+1
+\end{equation}
+In other words, it is the smallest number of adjacent diagonals to which to which the non-zero elements are confined.
+
+A matrix is called a \emph{banded matrix} if the bandwidth is reasonably small.
+
+A banded matrix with $k_1=k_2=0$ is a diagonal matrix; a banded matrix with $k_1=k_2=1$ is a tridiagonal matrix; etc. If one puts $k=0, k_2=n-1$ one obtains the definition of an upper triangular matrix; similarly for $k_1=n-1, k_2=0$ one obtains a lower triangular matrix.
+
+The following three matrices are all $n\times n$ matrices with $n=6$. The first one has $k_1=k_2=0$; the second one has $k_1=k_2=1$; the third one has $k_1=0, k_2=n-1$.
+
+
+\[
+  \begin{bmatrix}
+    1 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 1 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 1 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 1 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 1 \\
+  \end{bmatrix}
+  \quad
+  \begin{bmatrix}
+    1 & 1 & 0 & 0 & 0 & 0 \\
+    1 & 1 & 1 & 0 & 0 & 0 \\
+    0 & 1 & 1 & 1 & 0 & 0 \\
+    0 & 0 & 1 & 1 & 1 & 0 \\
+    0 & 0 & 0 & 1 & 1 & 1 \\
+    0 & 0 & 0 & 0 & 1 & 1 \\
+  \end{bmatrix}
+  \quad
+  \begin{bmatrix}
+    1 & 1 & 1 & 1 & 1 & 1 \\
+    0 & 1 & 1 & 1 & 1 & 1 \\
+    0 & 0 & 1 & 1 & 1 & 1 \\
+    0 & 0 & 0 & 1 & 1 & 1 \\
+    0 & 0 & 0 & 0 & 1 & 1 \\
+    0 & 0 & 0 & 0 & 0 & 1 \\
+  \end{bmatrix}
+\]
+% subsection matrix_bandwidth (end)
+
+\subsection{Band storage} % (fold)
+\label{sub:band_storage}
+
+Banded matrices are usually stored by storing the diagonals in the band as columns; the rest is implicity zero. What follows is an example of storing a $6\times 6$ tridiagonal matrix in a $6\times 3$ matrix:
+\[
+  \begin{bmatrix}
+    B_{11} & B_{12} & 0      & \cdots & \cdots & 0      \\
+    B_{21} & B_{22} & B_{23} & \ddots & \ddots & \vdots \\
+    0      & B_{32} & B_{33} & B_{34} & \ddots & \vdots \\
+    \vdots & \ddots & B_{43} & B_{44} & B_{45} & 0      \\
+    \vdots & \ddots & \ddots & B_{54} & B_{55} & B_{56} \\
+    0      & \cdots & \cdots & 0      & B_{65} & B_{66} \\
+  \end{bmatrix}
+  \;\rightarrow\;
+  \begin{bmatrix}
+    0      & B_{11} & B_{12} \\
+    B_{21} & B_{22} & B_{23} \\
+    B_{32} & B_{33} & B_{34} \\
+    B_{43} & B_{44} & B_{45} \\
+    B_{54} & B_{55} & B_{56} \\
+    B_{65} & B_{66} & 0      \\
+  \end{bmatrix}
+\]
+
+We can save further space if the matrix is symmetric: we then only have to store the main diagonal plus either the diagonals on the left or the right side. The other side is implicit from what is stored; e.g. $a_{i,i-1}=a_{i,i+1}$.
+
+% subsection band_storage (end)
+
+\subsection{Super- and subdiagonals} % (fold)
+\label{sub:super_and_subdiagonals}
+A superdiagonal entry is one that is directly above and to the right of the main diagonal. A subdiagonal entry is one that is directly below and to the left of the main diagonal,
+
+
+% subsection super_and_subdiagonals (end)
+
+% section banded_matrices (end)

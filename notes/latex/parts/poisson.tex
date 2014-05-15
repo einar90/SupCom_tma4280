@@ -10,4 +10,118 @@ If the matrix $\mathbf{A}$ is symmetric and positive definite, we find that $\ma
 
 % subsection banded_cholesky (end)
 
+
+\subsection{Krylov subspace methods} % (fold)
+\label{sub:krylov_subspace_methods}
+For any vector $b$,
+\begin{equation}
+  \mathbf{x} = \sum_{j=0}^{N-1} v_j \mathbf{A}^j \mathbf{b}
+\end{equation}
+that is span $\left\{ \mathbf{A}^j \mathbf{b} \right\}_{j=0}^{N-1}$ form a basis for the column space of $\mathbf{A}$. We call this space the \emph{Krylov subspace} of $\mathbf{A}$. Here $v_j$ is a set of coefficients. The main idea behind the Krylov subspace methods is to make an initial guess, then improve this by successively  eliminating contributions to the residual akibg each Krylov vector.
+
+Many different Krylov methods exist, each suitable for different types of linear systems (in the sense of symmetries, dfiniteness etc.).
+
+\subsubsection{Conjugate gradient (CG)} % (fold)
+\label{ssub:conjugate_gradient}
+
+The \emph{conjugate gradient} method is one of the two most important Krylov methods. The algorithm for the CG method is as follows:
+
+\begin{algorithm}[H]
+  \SetKwInput{KwSet}{Set}
+  \KwSet{$\mathbf{u}^0=\mathbf{0}, \mathbf{r}^0=\mathbf{f}$}
+  \For{$m=1,2,...$}{
+    $\beta_{m}=\frac{\left(\mathbf{r}^{m-1}\right)^{T}\mathbf{r}^{m-1}}{\left(\mathbf{r}^{m-2}\right)^{T}\boldsymbol{r}^{m-2}}\qquad\qquad(\beta_{1}\equiv0)$ \;
+    $\boldsymbol{p}^{m}=\boldsymbol{r}^{m-1}+\beta_{m}\boldsymbol{p}^{m-1}\qquad(\boldsymbol{p}^{1}\equiv\boldsymbol{r}^{0})$ \;
+    $\alpha_{m}=\frac{\left(\boldsymbol{r}^{m-1}\right)^{T}\boldsymbol{r}^{m-1}}{\left(\boldsymbol{p}^{m}\right)^{T}\boldsymbol{A}\boldsymbol{p}^{m}}$ \;
+    $\boldsymbol{u}^{m}=\boldsymbol{u}^{m-1}+\alpha_{m}\boldsymbol{p}^{m}$ \;
+    $\boldsymbol{r}^{m}=\boldsymbol{r}^{m-1}-\alpha_{m}\boldsymbol{A}\boldsymbol{p}^{m}$ \;
+  }
+  \caption{The conjugate gradient method.}
+\end{algorithm}
+
+Both this method and the GMRES method in the next section are hybrid method; part direct, part iterative. If we eliminate along all Krylov vectors we get the exact solution (if done with exact arithmetics). However, we use it as a way to obtain an approximative solution by introducing a stopping criterion. A typical cirterion is $\vert\vert r \vert\vert < tol$ for some tolerance $tol$.
+
+
+
+
+% subsubsection conjugate_gradient (end)
+
+\subsubsection{GMRES: Generalized Minimum RESidual method} % (fold)
+\label{ssub:gmres_generalized_minimum_residual_method}
+The GMRES is the ``hammer'' among the Krylov methods: it handles non-symmetric and non-definite problems.
+
+% subsubsection gmres_generalized_minimum_residual_method (end)
+
+% subsection krylov_subspace_methods (end)
+
+\subsection{Monte Carlo methods} % (fold)
+\label{sub:monte_carlo_methods}
+Monte Carlo methods are a broad class of computational algorithms that rely on repeated random sampling to obtain numerical results; typically one runs simulations many times over in order to obtain the distribution of an unknown probabilistic entity. In physics-related problems, Monte Carlo methods are quite useful for simulating systems with many coupled degrees of freedom, such as fluids, disordered materials, strongly coupled solids, and cellular structures.
+
+Monte Carlo methods vary, but tend to follow a particular pattern:
+\begin{enumerate}
+  \item Define a domain of possible inputs.
+  \item Generate inputs randomly from a probability distribution over the domain.
+  \item Perform a deterministic computation on the inputs.
+  \item Aggregate the results.
+\end{enumerate}
+
+For example, consider a circle inscribed in a unit square. Given that the circle and the square have a ratio of areas that is $\pi/4$, the value of $\pi$ can be approximated using a Monte Carlo method:
+\begin{enumerate}
+  \item Draw a square on the ground, then inscribe a circle within it.
+  \item Uniformly scatter some objects of uniform size (grains of rice or sand) over the square.
+  \item Count the number of objects inside the circle and the total number of objects.
+  \item The ratio of the two counts is an estimate of the ratio of the two areas, which is $\pi/4$. Multiply the result by 4 to estimate $\pi$.
+\end{enumerate}
+In this procedure the domain of inputs is the square that circumscribes our circle. We generate random inputs by scattering grains over the square then perform a computation on each input (test whether it falls within the circle). Finally, we aggregate the results to obtain our final result.
+
+If the grains are not uniformly distributed, then our approximation will be poor. Secondly, there should be a large number of inputs. The approximation is generally poor if only a few grains are randomly dropped into the whole square. On average, the approximation improves as more grains are dropped.
+
+
+\subsubsection{Integration by use of Monte Carlo methods} % (fold)
+\label{ssub:integration_by_use_of_monte_carlo_methods}
+Monte Carlo methods are well suited for use in problems with many degrees of freedom/dimensions. As long as the function in question is reasonably well-behaved, it can be estimated by randomly selecting points in $n$-dimensional space, and taking some kind of average of the function values at these points. By the central limit theorem, this method displays $1/\sqrt{N}$ convergence; i.e. quadrupling the number of sampled points halves the error, regradless of the number of dimensions.
+% subsubsection integration_by_use_of_monte_carlo_methods (end)
+
+% subsection monte_carlo_methods (end)
+
 % section solution_methods (end)
+
+\section{Poisson matrix formats} % (fold)
+\label{sec:poisson_matrix_format}
+
+\subsection{1 dimension} % (fold)
+\label{sub:1_dimension}
+
+\[
+  \begin{bmatrix}
+    2 & -1 & 0 & 0 & 0 & 0 \\
+    -1 & 2 & -1 & 0 & 0 & 0 \\
+    0 & -1 & 2 & -1 & 0 & 0 \\
+    0 & 0 & -1 & 2 & -1 & 0 \\
+    0 & 0 & 0 & -1 & 2 & -1 \\
+    0 & 0 & 0 & 0 & -1 & 2 \\
+  \end{bmatrix}
+\]
+% subsection 1_dimension (end)
+
+\subsection{2 dimensions} % (fold)
+\label{sub:2_dimensions}
+
+\[
+  \begin{bmatrix}
+    4 & -1 & 0 & \cdots & -1 & 0 & \cdots & \cdots & 0\\
+    -1 & 4 & -1 & \ddots & \cdots & -1 & \ddots & \ddots & \vdots\\
+    0 & -1 & 4 & -1 & \ddots & \cdots & -1 & \ddots & \vdots\\
+    \vdots & \ddots & \ddots & \ddots & \ddots & \ddots & \cdots & \ddots & 0\\
+    -1 & 0 & \ddots & -1 & 4 & -1 & \ddots & 0 & -1\\
+    0 & \ddots & \ddots & \ddots & \ddots & \ddots & \ddots & \ddots & 0\\
+    \vdots & \ddots & \ddots & \ddots & \ddots & \ddots & \ddots & \ddots & \vdots\\
+    \vdots & \ddots & \ddots & \ddots & \ddots & \ddots & \ddots & \ddots & -1\\
+    0 & \cdots & \cdots & 0 & -1 & \cdots & 0 & -1 & 4
+  \end{bmatrix}
+\]
+
+% subsection 2_dimensions (end)
+
+% section poisson_matrix_format (end)

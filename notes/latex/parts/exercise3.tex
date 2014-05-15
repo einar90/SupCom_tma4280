@@ -1,0 +1,98 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Exercise 3} % (fold)
+\label{sec:exercise_3}
+
+\subsection{Problem 2} % (fold)
+\label{sub:problem_2}
+
+\subsubsection{Bus-based interconnect} % (fold)
+\label{ssub:bus_based_interconnect}
+
+\begin{question}
+  What limits the scalability of a bus-based interconnect?
+\end{question}
+
+A bus-based system is an example of a shared-memory system. All the processors can access any physical memory location in the system. All memory locations are ``equidistant'' to all processors in the sense of having the same memory access time. This type of hardware configuration is an example of a Symmetric MultiProcessor (SMP).
+
+The limitation of such a configuration lies in the fact that the total bandwidth is fixed (and given by the bus). We can easily add more processors to the bus at a low cost, but all the processors must share the same bus. This limits the scalability of a bus-based approach.
+
+Note that the use of caches can reduce the bandwidth demand. As long as the needed data can be found in cache, there is no need to use the bus. However, the data stored in caches are replicated from main memory, and a system for keeping the caches “consistent” (or updated) can become a challenge.
+% subsubsection bus_based_interconnect (end)
+
+\subsubsection{Crossbar} % (fold)
+\label{ssub:crossbar}
+
+\begin{question}
+  How are the individual processors connected using a crossbar?
+\end{question}
+
+Similar to a bus-based system, a crossbar is also associated with a shared-memory system. It also represent an example of a Symmetric MultiProcessor (SMP) system. Unlike a bus-based system, there are multiple paths available between a processor and a memory unit, and between an I/O unit and a memory unit. By expanding the number of pathways (or the size of the crossbar) as the number of processors increases, a much more scalable system can be constructed. However, the price for doing this is high, in particular, for larger systems. Hence, a crossbar is typically only used for shared-memory systems up to a certain number of processors (e.g., 16 or 64).
+% subsubsection subsubsection_name (end)
+
+\subsubsection{Shared vs. distributed memory} % (fold)
+\label{ssub:shared_vs_distributed_memory}
+
+\begin{question}
+  What is the difference between a shared-memory and a distributed memory architecture?
+\end{question}
+
+In a shared-memory architecture, all the processors have access to all the available memory, i.e., all the processors have direct access to the global address space. In a distributed memory system, each processor has only local memory access; data stored in memory modules associated with other processors can only be reached via explicit message-passing (e.g., send and receive commands).
+% subsubsection shared_vs_distributed_memory (end)
+
+\subsubsection{SMP} % (fold)
+\label{ssub:smp}
+
+\begin{question}
+  Is the memory access time uniform for an SMP?
+\end{question}
+
+Yes.
+
+% subsubsection smp (end)
+
+% subsection problem_2 (end)
+
+\subsection{MPI\_Send} % (fold)
+\label{sub:mpi_send}
+
+\begin{question}
+  How many bytes are sent in each of the three messages listed below (here given in C, but this is not important)?
+  \begin{lstlisting}
+MPI_Send(buffer1, 80, MPI_CHAR, dest, tag, MPI_COMM_WORLD);
+MPI_Send(buffer2, 1024, MPI_INT, dest, tag, MPI_COMM_WORLD);
+MPI_Send(buffer3, 1024, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
+  \end{lstlisting}
+\end{question}
+
+\begin{enumerate}
+  \item Each character uses a single byte of memory. Hence, we need 80 bytes to send 80 characters.
+  \item Each integer uses four bytes of memory (or 32 bits). Hence, we need 4KB to send 1K of integers.
+  \item Each floating point number in double precision uses eight bytes of memory (or 64 bits). Hence, we need 8KB to send 1K of double precision numbers.
+\end{enumerate}
+
+% subsection mpi_send (end)
+
+\subsection{MPI\_Recv tag} % (fold)
+\label{sub:mpi_recv_tag}
+
+\begin{question}
+  Is it true that a unique tag must be specified each time MPI Recv is called?
+\end{question}
+
+No. For example, we can receive a message using MPI\_ANY\_TAG.
+% subsection mpi_recv_tag (end)
+
+\subsection{MPI matrix operations} % (fold)
+\label{sub:mpi_matrix_operations}
+
+\lstinputlisting[%
+  caption={matops\_mpi.c},
+  label={lst:matops_mpi},
+  language={C}]
+  {code/ex3/matops-mpi.c}
+
+
+% subsection mpi_matrix_operations (end)
+
+% section exercise_3 (end)

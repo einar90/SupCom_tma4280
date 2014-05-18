@@ -1,0 +1,43 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Equations} % (fold)
+\label{sec:equations}
+
+\subsection{Important equations} % (fold)
+\label{sub:important_equations}
+Speedup:
+\begin{equation}
+  S_p = \frac{T_1}{T_p}
+\end{equation}
+Parallel efficiency:
+\begin{equation}
+  \eta_p = \frac{S_p}{p} = \frac{T_1}{pT_p}
+\end{equation}
+% subsection important_equations (end)
+
+\subsection{Speedup} % (fold)
+\label{sub:speedup}
+
+We use a simple linear network model where the time to send $b$ bytes is modelled as
+\begin{equation}
+  T^{comm}(b) = \kappa + \gamma b
+\end{equation}
+where $\kappa$ is the network latency and $\gamma$ the inverse network bandwidth.
+
+For simplicitly we here consider a single Gauss-Jacobi iteration. If we split the matrix by rowsm assuming equal load on each MPI process, we get the computation and communication times
+\begin{equation}
+  T_P = \frac{T_1}{P}, \quad T_P^{comm} = \kappa + \gamma N^2
+\end{equation}
+and speedup
+\begin{equation}
+  S_P = \frac{T_1}{T_P+T_P^{comm}} = \frac{P}{1+P(\kappa + \gamma 8N^2)}
+\end{equation}
+
+If we apply domain decompositioning with strip domains, we get
+\begin{equation}
+  T_P = \frac{T_1}{P}, T_P^{comm} = 2 (\kappa + \gamma N)
+\end{equation}
+
+% subsection speedup (end)
+
+% section equations (end)

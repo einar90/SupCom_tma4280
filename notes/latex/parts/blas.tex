@@ -1,0 +1,31 @@
+% -*- root: ../supcom.tex -*-
+
+\section{BLAS: Basic Linear Algebra System} % (fold)
+\label{sec:blas}
+
+The Basic Linear Algebra Subprograms (BLAS) are a specified set of low-level kernel subroutines that perform common linear algebra operations such as copying, vector scaling, vector dot products, linear combinations, and matrix multiplication.
+
+BLAS operations are divided in three levels
+\begin{description}
+  \item[Level 1] operations only involve vectors: dot products, vector norms, scaling with a constant, generalized verctor addition (axpy) on the form
+    \[
+      \mathbf{y} = \alpha \mathbf{x} + \mathbf{y}
+    \]
+  \item[Level 2] operations are matrix-vector operations, including a generalized matrix vector multiplication (gemv):
+    \[
+      \mathbf{y} = \alpha \mathbf{A}\mathbf{x} + \beta \mathbf{y}
+    \]
+  \item[Level 3] operations are matrix-matrix operations includes a general matrix multiplication (gemm):
+    \[
+      \mathbf{C} = \alpha \mathbf{AB} + \beta \mathbf{C}
+    \]
+\end{description}
+
+BLAS is column major. This is because it is implemented in FORTRAN, whose notation tries to be consistent with mathematical notation. A C implementation of BLAS -- CBLAS -- also exists. This library can handle row-major matrices.
+
+Note that in general we achieve the highest number of FLOPS with level 3 operations. This is because today computation is generally memory bound; matrix-matrix operations allow for a higher degree of reuse (i.e. more cahce involvement) than the other types (they need to fetch new data from memory at a higher rate). But in general, all computation using BLAS are memory bound today because of high clock frequencies compared to memory speeds.
+
+
+
+
+% section blas (end)

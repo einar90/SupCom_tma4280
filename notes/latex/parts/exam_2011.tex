@@ -1,0 +1,110 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Exam 2011} % (fold)
+\label{sec:exam_2011}
+
+\subsection{Problem 1: Matrix-matrix multiplication and BLAS} % (fold)
+\label{sub:problem_1}
+
+\begin{question}
+  Let $\mathbf{a}$ and $\mathbf{b}$ be real vectors of length $n$, and $\mathbf{A}$, $\mathbf{B}$ and $\mathbf{C}$ be real $n\times n$ matrices. Consider the innerproduct (or dot product)
+  \begin{equation}
+    \sigma = \mathbf{a}^T \mathbf{b} = \mathbf{a} \cdot \mathbf{b}
+  \end{equation}
+
+  and the matrix-matrix multiplication
+  \begin{equation}
+    \mathbf{C} = \mathbf{AB}
+  \end{equation}
+
+  We recall that each matrix element $c_{ij}$ of $\mathbf{C}$ can be expressed as the innerproduct between the $i$-th row of $\mathbf{A}$ and the $j$-th column of $\mathbf{B}$, i.e. one innerproduct per matrix element.
+\end{question}
+
+\subsubsection{Matrix-matrix multiplication computation time, using BLAS Level 1} % (fold)
+\label{ssub:matrix_matrix_multiplication_computation_time}
+
+\begin{question}
+  First, we implement the matrix-matrix multiplication on a single processor using a fast implementation fo the innerproduct operation (e.g. using Level 1 BLAS). Timing of the matrix-matrix product with $n=1000$ yields an average time per innerproduct equal to $1.0\times 10^{-5}$ seconds. What is the time to perform the matrix-matrix product for this implementation? What is the corresponding performance in terms of the number of FLOPS?
+\end{question}
+
+The matrix-matrix operation consists of $n\times n$ inner products, each taking $10^{-5}$ seconds to perform. So the time to perform all the inner products is
+\begin{equation}
+  T_{m\times m} = n^2 10^{-5} = 10 s
+\end{equation}
+
+Each inner product requires $n-1$ additions and $n$ multiplications, and we need to do $n^2$ inner products. To the total number of operations required are
+\begin{equation}
+  N_{m\times m} = n^2((n-1)+n) \approx 2n^3 = 2 \times 10^9
+\end{equation}
+so the number of FLOPS is
+\begin{equation}
+  FLOPS_{m\times m} = \frac{N_{m\times m}}{T_{m\times m}} = 200\times 10^6 = 200 \mathrm{Mflops}
+\end{equation}
+
+% subsubsection matrix_matrix_multiplication_computation_time (end)
+
+
+\subsubsection{Matrix-matrix multiplication computation time, using BLAS Level 3} % (fold)
+\label{ssub:matrix_matrix_multiplication_computation_time_using_blas_level_3}
+
+\begin{question}
+  Next, we implement the matrix-matrix product using Level 3 BLAS. The performance is measured to be 6 Gflops for $n=1000$. What is the time to perform the matrix-matrix multiplication for this implementation? Does this seem reasonable compared to the result in the previous implementation?
+\end{question}
+
+We still need to perform $2n^3$ operations. We can perform $6\times 10^9$ operations per second. The time to perform the operations is
+\begin{equation}
+  \frac{2n^3}{6\times 10^9} = \frac{1}{3} s
+\end{equation}
+
+The results seem reasonable: Level 3 BLAS operations exploit the computational resources much better than level 1 because of better data reuse. This means that we can use the cache more, and reduces the memory traffic significantly compared to level 1 operations.
+
+We typically get fairly close to maximum theoretical performance using Level 3 BLAS.
+
+% subsubsection matrix_matrix_multiplication_computation_time_using_blas_level_2 (end)
+
+% subsection problem_1 (end)
+
+
+
+\subsection{Problem 2: The Poisson problem -- Conjugate gradient method and grid partitioning} % (fold)
+\label{sub:problem_2}
+
+\begin{question}
+  We would like to solve the Poisson problem on the unit square $\Omega = (0,1) \times (0,1)$ with boundary conditions $u=0$ specified alon the boundary $\partial \Omega$. We discretize the problem using finite difference techniques; the Laplace operator is approximated using the standard 5-point stencil. The grid spacing in each spatial direction is $h=1/n$, where $n\gg 1$.
+
+  The Conjugate gradient method is used to solve the system of algebraic equations. The implementation is done in double precision. In the multi-processor case, the original grid is decomposed into $P$ approximately equal subgrids, each of size $m\times m$, i.e. $m^2 \approx n^2/P$ (i.e. we slice the grid both in $x$- and $y$-direction). We assign one subgrid to each processor.
+
+  In the following, you can assume that the time it takes to send a message of $k$ bytes over the network can be expressed as
+  \begin{equation}
+    \tau_C(k) = \tau_S + \gamma k
+  \end{equation}
+  where $\tau_S$ is the startup time and $\gamma$ is the inverse bandwidth.
+\end{question}
+
+\subsection{Communication cost per conjugate gradient iteration} % (fold)
+\label{sub:communication_cost_per_conjugate_gradient_iteration}
+
+\begin{question}
+  Give an expression for the communication cost per conjugate gradient iteration.
+\end{question}
+
+The algorithm for the conjugate gradient method is as follows:
+
+\begin{algorithm}[H]
+  \SetKwInput{KwSet}{Set}
+  \KwSet{$\mathbf{u}^0=\mathbf{0}, \mathbf{r}^0=\mathbf{f}$}
+  \For{$m=1,2,...$}{
+    $\beta_{m}=\frac{\left(\mathbf{r}^{m-1}\right)^{T}\mathbf{r}^{m-1}}{\left(\mathbf{r}^{m-2}\right)^{T}\boldsymbol{r}^{m-2}}\qquad\qquad(\beta_{1}\equiv0)$ \;
+    $\boldsymbol{p}^{m}=\boldsymbol{r}^{m-1}+\beta_{m}\boldsymbol{p}^{m-1}\qquad(\boldsymbol{p}^{1}\equiv\boldsymbol{r}^{0})$ \;
+    $\alpha_{m}=\frac{\left(\boldsymbol{r}^{m-1}\right)^{T}\boldsymbol{r}^{m-1}}{\left(\boldsymbol{p}^{m}\right)^{T}\boldsymbol{A}\boldsymbol{p}^{m}}$ \;
+    $\boldsymbol{u}^{m}=\boldsymbol{u}^{m-1}+\alpha_{m}\boldsymbol{p}^{m}$ \;
+    $\boldsymbol{r}^{m}=\boldsymbol{r}^{m-1}-\alpha_{m}\boldsymbol{A}\boldsymbol{p}^{m}$ \;
+  }
+  \caption{The conjugate gradient method.}
+\end{algorithm}
+
+% subsection communication_cost_per_conjugate_gradient_iteration (end)
+
+% subsection problem_2 (end)
+
+% section exam_2011 (end)

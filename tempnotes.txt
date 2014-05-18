@@ -1,0 +1,46 @@
+Dot products implemented in MPI use reduction trees
+
+2011 Fasit feil oppg 2c.. De glemte P over nevneren som gjør deler av argumentet ubrukelig. Speedup will increase, but parallell efficiency will not. (There the argument is correct)
+
+
+Partitioning Schemes matrices
+Two/Three different approaches:
+-Strips
+-Columns
+-Block (Combination)
+
+X-vector stripped in "chunks/blocks".
+(Ax = b)
+
+For rows: (Tau_C (N / P))
+1) Collect entire Vector X
+2) Local MxV
+
+For columns: (P * log_2(P)*Tau_S + gamma(8N / P))
+1) Every prosess has a part of X belonging to their columns in A. Perform local MxV
+2) You now have vectors on each prosess with parts of b, do one reduction per process.
+
+"Duplication saves communication", Domain decomposition. Use more memory to reduce comms.
+
+For shared memory rows will always be better.
+
+For MPI rows has least communications usually. This doesn't scale very well (N/P) when N is very large. This is where domain decomposition helps us out.
+
+Spectral bisection is not part of the syllabus. We are still working on square matrices
+
+
+Communication:
+Tau_A = Tau_F = time to do a flop, typically 1 / clock frequency
+
+Tau_C = linear time to send b BYTES
+	Tau_S = latency, time for the first number to arrive (startup cost)
+	gamma = Inverse bandwidth, time it takes to send the number once you have intiated the transfer (works like a pipeline)
+
+
+With MPI you can attach a topology to a communicator. Then we can use MPI_Shift which is a function that tells us who is on the sides of "ourselves". "If I move to the right, whos there?" It returns the rank of whoever is there.
+
+
+
+Hvorfor det er lettere å få god speedup for kode der beregningene ikk er optimalisert:
+T_p = T_comp + T_comm
+Hvis comp er veldig liten blir comm mer dominerende -> dårligere speedup.

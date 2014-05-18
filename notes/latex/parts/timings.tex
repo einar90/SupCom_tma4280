@@ -1,0 +1,21 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Timings} % (fold)
+\label{sec:timings}
+
+Inner product $\mathbf{x}^T \mathbf{y}$: $n-1$ additions and $n$ multiplications.
+\begin{equation}
+  T_{ip} = (n-1) + n \approx 2n
+\end{equation}
+
+Matrix-vector multiplication $\mathbf{Ax}$, square matrix: ($n-1$) additions and $n$ multiplications for each of $n$ rows:
+\begin{equation}
+  T_{m\times v} = n((n-1)+n) \approx 2n^2
+\end{equation}
+
+Matrix-matrix multiplication $\mathbf{AB}$, sqare matrices: Basically multiplying two $n\times n$ matrices requires performing $n^2$ inner products:
+\begin{equation}
+  T_{m\times v} = n^((n-1) + n) \approx 2n^3
+\end{equation}
+
+% section timings (end)

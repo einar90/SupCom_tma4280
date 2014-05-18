@@ -1,0 +1,222 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Exam 2006} % (fold)
+\label{sec:exam_2006}
+
+\subsection{Problem 1: Inner product} % (fold)
+\label{sub:problem_1_inner_product}
+
+\begin{question}
+  Let $x$ and $y$ be two vectors of length $n$. Consider the following operations (innerproducts):
+
+  \begin{align}
+    \sigma_1 &= x^T x = \sum_{i=1}^n x_i \cdot x_i \label{eq:2006_1_1} \\
+    \sigma_2 &= x^T y = \sum_{i=1}^n x_i \cdot y_i \label{eq:2006_1_2}
+  \end{align}
+  Both operations are to be computed numerically in double precision on $P$ processors. Note that operation \eqref{eq:2006_1_1} is the same as operation \eqref{eq:2006_1_2} when $x=y$.
+
+  Assume in the following that each processor is a MIPS processor of the same type as on gridur. The clock frequency is 500 MHz and at the most a single floating point can be transferred to or from the memory per clock cycle. Assume further that we use a distributed memory multiprocessor machine with the following network characteristics: the time it takes to send a message with $k$ bytes, $\tau_C(k)$ can be approximated as
+  \begin{equation}
+    \tau_C(k) = \tau_S + \gamma k
+  \end{equation}
+  Here, $\tau_S$ is a fixed startup time and $\gamma$ is the inverse bandwidth.
+\end{question}
+
+\subsubsection{Expected maximum performance} % (fold)
+\label{ssub:expected_maximum_performance}
+
+\begin{question}
+  We consider first the single processor case $P=1$. What is the expeced maximum performance of operation \eqref{eq:2006_1_1} and operation \eqref{eq:2006_1_2}? How great is this performance compared to the maximum theoretical performance for this type of processor?
+\end{question}
+
+Pipelining and chaining allows the processor to, after some startup time, perform \emph{two} FLOPs (multiply-add) per clock cycle, meaning that the maximum theoretical performance of the processor is $2\times 500 Mflops=1 Gflops$.
+
+For the inner product operation \eqref{eq:2006_1_2}, the performance is memory bound. While we accumulate the constributions in the variable $\sigma$, this variable can be stored in the register. In order to update $\sigma$ with the next $x_i \cdot y_i$ contribution, we need to get the two new components from memory; this will take two clock cycles. During these two clock cycles we can, using pipelining and chaining, perform the multiply-add for the previous two loaded elements. Thus we are able to perform two FLOPs per two clock cycles, or 50\% of the maximum theoretical performance. This performance can be (approximately) seen for problems where the vectors $x$ and $y$ are fully available in the L1 cache.
+
+For the innerproduct operation \eqref{eq:2006_1_1} only a single memory reference is needed for each $\sigma$ contribution $x_i\cdot x_i$; we can get this in one clock cycle. During this clock cycle we can perform the multiply-add operation (two flops) for the previous element retrieved from memory. This performance corresponds to the maximum theoretical performance, 1 Gflops. This performance can be (approximately) seen for problems where the vectors $x$ and $y$ are fully available in the L1 cache.
+
+% subsubsection expected_maximum_performance (end)
+
+\subsubsection{Expected multiprocessor performance} % (fold)
+\label{ssub:expected_multiprocessor_performance}
+
+\begin{question}
+  We now consider the multiprocessor case ($P>1$). Assume that the vectors $x$ and $y$ are aleady distributed in an optimal way across the processors. Which operation will achieve the highest speedup?
+\end{question}
+
+To comupte the inner product we need to perform (approximately) one multiply and one add per vector element. Thus the computation time for one processor is
+\begin{equation}
+  T_1 = 2n\tau_A
+\end{equation}
+And the time for $P$ processors is
+\begin{equation}
+  T_p = \frac{T_1}{P} + T_{comm}
+\end{equation}
+
+Both innerproducts require communication. Using a binary tree for the global sum, the communication cost is the number of reductions ($\log_2(P)$) times the time to sum each pair of numbers ($\tau_A$) plus the time to transfer each part-sum double precision float ($\tau_C(8)$). Because the amount of data to tranfer is so small, and because we only have to perform one flop per sum, the communication time will be completely dominated by the startup time $\tau_S$:
+\begin{equation}
+  T_{comm} = \log_2(P) \left( \tau_A + \tau_C(8) \right) \approx \tau_S \log_2(P)
+\end{equation}
+
+
+
+The speedup is thus
+\begin{equation}
+  S_p = \frac{T_1}{T_p}
+  = \frac{T_1}{\frac{T_1}{P} + T_{comm}}
+  = \frac{P}{1+P\cdot \frac{T_{comm}}{T_1}}
+  = \frac{P}{1+P\frac{\tau_{S}\log_{2}\left(P\right)}{2n\tau_{A}}}
+\end{equation}
+
+For a fixed $n$ and $P$ the speedup depends only on $\tau_S$ and $\tau_A$. The paramenter $\tau_S$ is related to the network characteristics and can be assumed fixed. The parameter $\tau_A$ -- the time to perform one flop -- is smallest for operation \eqref{eq:2006_1_1}. Hence, operation \eqref{eq:2006_1_2} will achieve the highest speedup.
+
+This is expeced: it is harder to achieve good speedup for an optimized code.
+% subsubsection expected_multiprocessor_performance (end)
+
+
+\subsubsection{Inner products in the conjugate gradient method} % (fold)
+\label{ssub:inner_products_in_the_conjugate_gradient_method}
+
+\begin{question}
+  Are operations \eqref{eq:2006_1_1} and \eqref{eq:2006_1_2} of interest in the conjugate gradient method? If so, identify the operands in this method.
+\end{question}
+
+Yes; both operations are of interest. The $x^Tx$ operation is needed to compute the length of the residual vector ($\mathbf{r}^T \mathbf{r}$). The $x^T y$ operation is needed to compute the inner between the search direction $\mathbf{p}$ and the vectorproduct $\mathbf{Ap}$: $\mathbf{p}^T \mathbf{Ap}$.
+
+\begin{algorithm}[H]
+  \SetKwInput{KwSet}{Set}
+  \KwSet{$\mathbf{u}^0=\mathbf{0}, \mathbf{r}^0=\mathbf{f}$}
+  \For{$m=1,2,...$}{
+    $\beta_{m}=\frac{\left(\mathbf{r}^{m-1}\right)^{T}\mathbf{r}^{m-1}}{\left(\mathbf{r}^{m-2}\right)^{T}\boldsymbol{r}^{m-2}}\qquad\qquad(\beta_{1}\equiv0)$ \;
+    $\boldsymbol{p}^{m}=\boldsymbol{r}^{m-1}+\beta_{m}\boldsymbol{p}^{m-1}\qquad(\boldsymbol{p}^{1}\equiv\boldsymbol{r}^{0})$ \;
+    $\alpha_{m}=\frac{\left(\boldsymbol{r}^{m-1}\right)^{T}\boldsymbol{r}^{m-1}}{\left(\boldsymbol{p}^{m}\right)^{T}\boldsymbol{A}\boldsymbol{p}^{m}}$ \;
+    $\boldsymbol{u}^{m}=\boldsymbol{u}^{m-1}+\alpha_{m}\boldsymbol{p}^{m}$ \;
+    $\boldsymbol{r}^{m}=\boldsymbol{r}^{m-1}-\alpha_{m}\boldsymbol{A}\boldsymbol{p}^{m}$ \;
+  }
+  \caption{The conjugate gradient method.}
+\end{algorithm}
+
+% subsubsection inner_products_in_the_conjugate_gradient_method (end)
+
+% subsection problem_1_inner_product (end)
+
+
+
+\subsection{Problem 2: MPI} % (fold)
+\label{sub:problem_2_mpi}
+
+\begin{question}
+  In order to check the MPI message passing on Gridur, we measure the time to complete a broadcast operation (MPI\_Bcast). The performance test is as follows: we measure the time $\Delta t$ to complete a broadcast operation on $P$ processors, and where the message consists of a single floating point number.  The measured time, divided by $\log_2 P$, are given in the table below.
+
+  \begin{center}
+    \begin{tabular}{ll}
+    \toprule
+    $P$ & $\Delta t \log_2 P$ (seconds) \\
+    \midrule
+    2  & $3.4 \cdot 10^{-6}$ \\
+    4  & $3.5 \cdot 10^{-6}$ \\
+    8  & $3.2 \cdot 10^{-6}$ \\
+    16 & $3.5 \cdot 10^{-6}$ \\
+    32 & $3.8 \cdot 10^{-6}$ \\
+    \bottomrule
+    \end{tabular}
+  \end{center}
+\end{question}
+
+
+\subsubsection{MPI\_Bcas -- Constant $\Delta t/\log_2 P$} % (fold)
+\label{ssub:constant_delta_t_log_2_p_}
+
+\begin{question}
+  We conclude that $\Delta t/\log_2 P \approx 3.5 \times 10^{-6}$ seconds for the broadcast operation. Does it seem reasonable that $\Delta t/\log_2 P$ is approximately equal to a constant?
+\end{question}
+
+The broadcast operation is typically implemented using a recursive doubling algorithm, similar to the global sum algorithm. Hence, the communication pattern is a binary tree -- at each stage in this communication tree, each of the processors will pass on the information to a new processor. The time this takes is approximately equal to $\tau_S$, because $\tau_C(8) \approx \tau_C(1) \approx \tau_S$. Again we have $\log_2 P$. The total time to perform a broadcast operation can thus be expressed as
+\begin{equation}
+  \Delta t = \log_2 P \cdot\tau_S
+\end{equation}
+
+Hence we should expect that the time to perform a broadcast operation is proportional to $\log_2 P$; or that $\Delta t/\log_2 P$ stay constant as we change $P$. It is infact approximately equal to the startup time, which is more or less constant.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[]{illustrations/comminucation/mpi_bcast.pdf}
+  \caption{Binary tree.}
+  \label{fig:label}
+\end{figure}
+
+% subsubsection constant_delta_t_log_2_p_ (end)
+
+\subsubsection{MPI\_Allreduce vs. MPI\_Reduce + MPI\_Bcast} % (fold)
+\label{ssub:mpi_allreduce_vs_mpi_reduce_mpi_bcast}
+
+\begin{question}
+  One way to compute the global sum such that all the processors end up with the same answer can be realized in MPI by using the library function MPI\_Allreduce. Another way to obtain the same result is to first use the MPI\_Reduce function, followed by MPI\_Bcast. Which alternative is fastest?
+\end{question}
+
+MPI\_Allreduce should be fastest. Using this alternative, only $log_2 P$ stages are needed to find the global sum on all the processors. Using the second alternative will probably take twice as long, since each of MPI\_Reduce and MPI\_Bcast require $\log_2 P$ stages.
+
+% subsubsection mpi_allreduce_vs_mpi_reduce_mpi_bcast (end)
+
+
+\subsubsection{Grouping the MPI communcation functions} % (fold)
+\label{ssub:grouping_the_mpi_communcation_functions}
+
+\begin{question}
+  The MPI library consits of many specific message passing operations. How would you classify all these operations into a few main groups of types of communication patterns?
+\end{question}
+
+\begin{description}
+  \item[One-to-one:] Communication from one specific process to another, e.g. MPI\_Send/Recv.
+  \item[One-to-all:] Communication from one process to all others, e.g. MPI\_Bcast.
+  \item[All-to-one:] Communication from all processes to one specific process, e.g. MPI\_Gather.
+  \item[All-to-all:] Communication between all processes, e.g. MPI\_Allgather.
+\end{description}
+
+% subsubsection grouping_the_mpi_communcation_functions (end)
+
+% subsection problem_2_mpi (end)
+
+
+\subsection{Problem 3: The Poisson problem solved with the conjugate gradient method} % (fold)
+\label{sub:problem_3_the_poisson_problem_solved_with_the_conjugate_gradient_method}
+
+\begin{question}
+  We consider now the Poisson problem in a rectangular domain $\Omega = (0,L_x) \times (0,L_y)$. The solution is specified to be zero along the domain boundary. The problem is discretized using a 5-point stencil on a structured finite difference grid with $(n_x+1)$ points in the $x$-direction and $(n_y+1)$ points in the $y$-direction. Hence the number of unknowns is $(n_x-1)\times (n_y-1)$. The discrete equations are solved iteratively using the conjugate gradient method.
+\end{question}
+
+\begin{algorithm}[H]
+  \SetKwInput{KwSet}{Set}
+  \KwSet{$\mathbf{u}^0=\mathbf{0}, \mathbf{r}^0=\mathbf{f}$}
+  \For{$m=1,2,...$}{
+    $\beta_{m}=\frac{\left(\mathbf{r}^{m-1}\right)^{T}\mathbf{r}^{m-1}}{\left(\mathbf{r}^{m-2}\right)^{T}\boldsymbol{r}^{m-2}}\qquad\qquad(\beta_{1}\equiv0)$ \;
+    $\boldsymbol{p}^{m}=\boldsymbol{r}^{m-1}+\beta_{m}\boldsymbol{p}^{m-1}\qquad(\boldsymbol{p}^{1}\equiv\boldsymbol{r}^{0})$ \;
+    $\alpha_{m}=\frac{\left(\boldsymbol{r}^{m-1}\right)^{T}\boldsymbol{r}^{m-1}}{\left(\boldsymbol{p}^{m}\right)^{T}\boldsymbol{A}\boldsymbol{p}^{m}}$ \;
+    $\boldsymbol{u}^{m}=\boldsymbol{u}^{m-1}+\alpha_{m}\boldsymbol{p}^{m}$ \;
+    $\boldsymbol{r}^{m}=\boldsymbol{r}^{m-1}-\alpha_{m}\boldsymbol{A}\boldsymbol{p}^{m}$ \;
+  }
+  \caption{The conjugate gradient method.}
+\end{algorithm}
+
+\subsubsection{Solution time per conjugate gradient iteration on one processor} % (fold)
+\label{ssub:solution_per_conjugate_gradient_iteration_on_one_processor}
+
+\begin{question}
+  Give an expression for the solution time per conjugate gradient iteration on a single processor.
+\end{question}
+
+\begin{equation}
+  T_1 \approx 19 N \tau_A
+\end{equation}
+where $N=(n_x-1)(n_y-1) \approx n_x n_y$. (\emph{Just accept it}.)
+
+% subsubsection solution_per_conjugate_gradient_iteration_on_one_processor (end)
+
+\subsubsection{subsubsection name} % (fold)
+\label{ssub:subsubsection_name}
+
+% subsubsection subsubsection_name (end)
+
+% subsection problem_3_the_poisson_problem_solved_with_the_conjugate_gradient_method (end)
+
+% section exam_2006 (end)

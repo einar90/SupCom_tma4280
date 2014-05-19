@@ -13,6 +13,11 @@ Parallel efficiency:
 \begin{equation}
   \eta_p = \frac{S_p}{p} = \frac{T_1}{pT_p}
 \end{equation}
+Amdahls law (max speedup):
+\begin{equation}
+  S(N) = \frac{1}{1-B + \frac{B}{N}}
+\end{equation}
+where $N$ is the number of processors and $B$ is the fraction of the code that can be parallelized.
 % subsection important_equations (end)
 
 \subsection{Speedup} % (fold)

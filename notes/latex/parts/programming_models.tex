@@ -21,14 +21,14 @@ Some of the key advantages of the message-passing model are:
   \item[Expressiveness:] A limited communication library suffices for most applications.
 \end{description}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[]{illustrations/programming_models/mpi.pdf}
   \caption{An illustration of the MPI programming model. We have several independent processes, and each of these processes have their own separate program flow.}
   \label{fig:mpi}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[]{illustrations/programming_models/mpi_message.pdf}
   \caption{Illustration of the message passing model. A number of processes are coupled together via a communication network. Each process has a local and unique memory/cache. The processes communicate via explicit message passing. A

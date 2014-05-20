@@ -1,0 +1,27 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \draw [thick] (0,0) rectangle (9,9);
+
+  \draw [|-|] (-.5,0) -- (-.5,9) node [midway, anchor=east] {$n$ cols};
+  \draw [|-|] (0,-.5) -- (9,-.5) node [midway, anchor=north] {$n$ rows};
+
+  \draw [] (3,0) -- (3,9);
+  \draw [] (6,0) -- (6,9);
+  \draw [] (0,3) -- (9,3);
+  \draw [] (0,6) -- (9,6);
+
+  \node at (4.5,4.5) {$P_{i,j}$};
+  \node at (1.5,4.5) {$P_{i,j-1}$};
+  \node at (7.5,4.5) {$P_{i,j+1}$};
+  \node at (4.5,1.5) {$P_{i+1,j}$};
+  \node at (4.5,7.5) {$P_{i-1,j}$};
+
+  \node [anchor=east] at (3, 4.5) {\textbf{W}};
+  \node [anchor=west] at (6, 4.5) {\textbf{E}};
+  \node [anchor=south] at (4.5, 6) {\textbf{N}};
+  \node [anchor=north] at (4.5, 3) {\textbf{S}};
+
+  \draw [|-|] (3,9.5) -- (6,9.5) node [midway, anchor=south] {$\frac{n}{\sqrt{P}}$ cols per block};
+
+\end{tikzpicture}

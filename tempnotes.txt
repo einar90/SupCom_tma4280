@@ -1,5 +1,3 @@
-Dot products implemented in MPI use reduction trees
-
 2011 Fasit feil oppg 2c.. De glemte P over nevneren som gjør deler av argumentet ubrukelig. Speedup will increase, but parallell efficiency will not. (There the argument is correct)
 
 

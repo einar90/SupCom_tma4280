@@ -1,0 +1,35 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node (p01) at (0 ,0) {$P_0$}; \node [draw, anchor=south] at (p01.north) {$c_0$};
+  \node (p11) at (2 ,0) {$P_1$}; \node [draw, anchor=south] at (p11.north) {$c_1$};
+  \node (p21) at (4 ,0) {$P_2$}; \node [draw, anchor=south] at (p21.north) {$c_2$};
+  \node (p31) at (6 ,0) {$P_3$}; \node [draw, anchor=south] at (p31.north) {$c_3$};
+
+  \node at (-2,-.5) {Step 1:};
+
+  \draw [bend right, <->] (p01.south) to (p11.south);
+  \draw [bend right, <->] (p21.south) to (p31.south);
+
+
+
+  \node (p02) at (0 ,-3) {$P_0$}; \node [draw, anchor=south] at (p02.north) {$c_0+c_1$};
+  \node (p12) at (2 ,-3) {$P_1$}; \node [draw, anchor=south] at (p12.north) {$c_0+c_1$};
+  \node (p22) at (4 ,-3) {$P_2$}; \node [draw, anchor=south] at (p22.north) {$c_2+c_3$};
+  \node (p32) at (6 ,-3) {$P_3$}; \node [draw, anchor=south] at (p32.north) {$c_2+c_3$};
+
+
+  \node at (-2,-3.5) {Step 2:};
+
+  \draw [bend right, <->] (p02.south) to (p22.south);
+  \draw [bend right, <->] (p12.south) to (p32.south);
+
+
+
+  \node at (-2,-5.5) {At end:};
+
+  \node (p02) at (1.0  ,-6) {$P_0$}; \node [draw, anchor=south] at (p02.north) {$c_0+c_1+c_2+c_3$};
+  \node (p12) at (4.5  ,-6) {$P_1$}; \node [draw, anchor=south] at (p12.north) {$c_0+c_1+c_2+c_3$};
+  \node (p22) at (8.0  ,-6) {$P_2$}; \node [draw, anchor=south] at (p22.north) {$c_0+c_1+c_2+c_3$};
+  \node (p32) at (11.5 ,-6) {$P_3$}; \node [draw, anchor=south] at (p32.north) {$c_0+c_1+c_2+c_3$};
+\end{tikzpicture}

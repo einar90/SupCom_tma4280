@@ -1,0 +1,38 @@
+% -*- root: ../supcom.tex -*-
+
+\section{Matrix-matrix multiplication} % (fold)
+\label{sec:matrix_matrix_multiplication}
+
+Multiplying an $m\times n$ matrix $A$ with $m$ rows and $n$ columns and an $n\times l$ matrix $B$ with $n$ rows and $l$ columns produces an matrix $C$ with $m$ rows and $l$ columns. Each element of the matrix $C$ is calculated according to the formula:
+\begin{equation}
+  c_{ij} = \sum_{k=0}^{n-1} a_{ik} b_{kj}, \quad 0 \leq i < m, \; 0\leq j < l
+\end{equation}
+In other words $C$ is the result of the inner product of the corresponding row of the matrix $A$ and column of the matrix $B$.
+
+This algorithm executes $m\cdot n\cdot l$ multiplications and the same number of additions of the initial matrix elements. In case of square matrices, the size of which is $n\times n$ , the number of the executed operations is the order $O(n^3)$.  We will assume further that all matrices are square and their sizes are $n\times n$.
+
+\subsection{Sequential algorithm} % (fold)
+\label{sub:sequential_algorithm}
+The sequential matrix multiplication algorithm includes three nested loops:
+
+\begin{lstlisting}
+for (i=0; i<Size; i++){
+  for (j=0; j<Size; j++){
+    MatrixC[i][j] = 0;
+    for (k=0; k<Size; k++){
+      MatrixC[i][j] = MatrixC[i][j] + MatrixA[i][k]*MatrixB[k][j];
+    }
+  }
+}
+\end{lstlisting}
+
+As each result matrix element is a scalar product of the initial matrix A row and the initial matrix B column, it
+is necessary to carry out $n^2(2n-1)$ operations to compute all elements of the matrix $C$. As a result the time complexity of matrix multiplication is
+\begin{equation}
+  T_1 = n^2(2n-1)\tau_F
+\end{equation}
+
+% subsection sequential_algorithm (end)
+
+
+% section matrix_matrix_multiplication (end)

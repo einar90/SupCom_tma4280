@@ -145,25 +145,69 @@ in total 9 operations. The time required to do each operation, i.e. one flop, is
 \begin{equation}
   T_1^s = 9n^2\tau_f
 \end{equation}
-We then need to compute the resudial $r$ to check the convergence criterium. This is computed as
-\begin{equation}
-  r = b - \mathbf{A}x^k
-\end{equation}
-which requires the following operations:
-\begin{itemize}
-  \item For $\mathbf{A}x^k$ we need $n^2$ multiplications and $n(n-1)$ addtions. $n^2+n(n-1)\asymp 2n^2$.
-  \item For $b - \mathbf{A}x^k$ we need $n$ subtractions.
-\end{itemize}
-Asymptotically we need $2n^2 + n \asymp 2n^2$ operations to perform the convergence criterium check. Therefore the total time required pr. iteration is
+We also need to perform one inner product ($O(2n^2)$) in the convergence criterium check. Therefore the total time required pr. iteration is
 \begin{equation}
   T_1 = T_1^s + 2n^2 \tau_f = 11n^2 \tau_f
 \end{equation}
 
-% TODO: Gjør ferdig dette
+\begin{figure}[H]
+  \centering
+  \includegraphics[]{illustrations/partitioning/domain-decomp.pdf}
+  \caption{Illustration of block domain partitioning.}
+  \label{fig:2013_domain_decomp}
+\end{figure}
+
+In terms of geometry (see Figure~\ref{fig:2013_domain_decomp}), $x_{i,j}^k$  on the 2D grid is computed as follows (keep in mind that we are using the 5-point stencil):
+
+\begin{align*}
+    x_{i,j}^{k+1} = b_{i,j} &- a_{i+1,j} * x_{i+1,j}^k \\
+                            &- a_{i-1,j} * x_{i-1,j}^k \\
+                            &- a_{i,j+1} * x_{i,j+1}^k \\
+                            &- a_{i,j-1} * x_{i,j-1}^k \\
+\end{align*}
+
+So we see that when we're computing the $x$'s on the northernmost row on $P_{i,j}$, we need the $x$'s on the southermost row of $P_{i-1,j}$, and similar for the three other edges. Each edge-row contains $n/\sqrt{p}$ values.
+
+So to summarize, each process needs to transfer $n/\sqrt{p}$ elements to each of its 4 neighbouring processes (which are found using MPI\_Shift). Keep in mind that the matrix $x$ is still 1D, and is only divided rowwise across the processes. The communication stems from the domain partitioning.
+
+After performing the iteration we need to compute part of the convergence check inner product on each process, and then perform a global reduction (i.e. MPI\_Allreduce); only one number is sent from each process in this stage.
+
+So the total communication time is
+\begin{equation}
+  T_{comm} = T_{iter} + T_{conv}
+           = 4 \left( \tau_S + w \frac{n}{\sqrt{P}} \tau_C \right)
+           + \log_2 P \left( \tau_S + w\tau_C \right)
+\end{equation}
+where $T_{iter}$ is the communication time directly related to the gauss-jacobi iterations; $T_{conv}$ is the communication related to the convergence check; $w$ is the size of each data element; here $w=8$. Because we're only sending one byte in the reduction, it will be dominated by the latency, so that part may be approximated as $\log_2 P \left( \tau_S + w\tau_C \right) \approx \tau_S \log_2 P$.
+
+The computation time per iteration for $P$ processors is
+\begin{equation}
+  T_{comp} = \frac{T_1}{P} = \frac{11n^2 \tau_f}{P}
+\end{equation}
+
+We then combine $T_1$, $T_{comm}$ and $T_{comp}$ to get the speedup and parallel efficiency estimates for $M$ iterations (approximations for the communication are inserted):
+\begin{align*}
+  S_P &= \frac{MT_1}{MT_{comp} + MT_{comm}} = \frac{11n^2 \tau_f}{\frac{11n^2 \tau_f + }{P} + 4 \left( \tau_S + 8 \frac{n}{\sqrt{P}} \tau_C \right)
+           + \tau_S\log_2 P } \\
+  \eta_P &= \frac{S_P}{P}
+\end{align*}
+
+This is as expected: we are applying the same procedure at each iteration and thus the speedup should be the same no matter the amount of iterations.
 
 % subsubsection speedup_and_efficiency (end)
 
 % subsection problem_2 (end)
+
+
+
+
+
+
+
+
+
+
+
 
 
 

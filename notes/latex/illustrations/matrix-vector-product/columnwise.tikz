@@ -1,0 +1,66 @@
+% -*- root: ../../supcom.tex -*-
+
+\begin{tikzpicture}
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west]           (bl) at (0,0) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west]           (bm) at (bl.east) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west,fill=gray] (br) at (bm.east) {};
+
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west]           (ml) at (0,2) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west,fill=gray] (mm) at (ml.east) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west]           (mr) at (mm.east) {};
+
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west,fill=gray] (tl) at (0,4) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west]           (tm) at (tl.east) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west]           (tr) at (tm.east) {};
+
+  \node [] at ($ (bm) + (1,0) $) {$\times$};
+  \node [] at ($ (mm) + (1,0) $) {$\times$};
+  \node [] at ($ (tm) + (1,0) $) {$\times$};
+
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, rectangle split part fill={white,white,gray}] (bv) at ($ (bm.east) + (1,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, rectangle split part fill={white,gray,white}] (mv) at ($ (mm.east) + (1,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, rectangle split part fill={gray,white,white}] (tv) at ($ (tm.east) + (1,0) $) {};
+
+  \node [] at ($ (bv) + (.5,0) $) {$=$};
+  \node [] at ($ (mv) + (.5,0) $) {$=$};
+  \node [] at ($ (tv) + (.5,0) $) {$=$};
+
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (bc) at ($ (bm.east) + (2,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (mc) at ($ (mm.east) + (2,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (tc) at ($ (tm.east) + (2,0) $) {};
+
+  \draw [underbrace] (4,-.8) -- (4,4.8);
+
+  \draw [-latex] ($ (mc.east) + (1,0) $) -- ($ (tc.east) + (3,0) $);
+  \draw [-latex] ($ (mc.east) + (1,0) $) -- ($ (mc.east) + (3,0) $);
+  \draw [-latex] ($ (mc.east) + (1,0) $) -- ($ (bc.east) + (3,0) $);
+
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (bc1) at ($ (bm.east) + (6,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (mc1) at ($ (mm.east) + (6,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (tc1) at ($ (tm.east) + (6,0) $) {};
+
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (bc2) at ($ (bm.east) + (7,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (mc2) at ($ (mm.east) + (7,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (tc2) at ($ (tm.east) + (7,0) $) {};
+
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (bc3) at ($ (bm.east) + (8,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (mc3) at ($ (mm.east) + (8,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=lightgray] (tc3) at ($ (tm.east) + (8,0) $) {};
+
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=gray] (bctot) at ($ (bm.east) + (9,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=gray] (mctot) at ($ (mm.east) + (9,0) $) {};
+  \node [rectangle split, rectangle split parts=3, draw, anchor=west, fill=gray] (tctot) at ($ (tm.east) + (9,0) $) {};
+
+  \node [] at ($ (bm.east) + (6.7,0) $) {+};
+  \node [] at ($ (mm.east) + (6.7,0) $) {+};
+  \node [] at ($ (tm.east) + (6.7,0) $) {+};
+
+  \node [] at ($ (bm.east) + (7.7,0) $) {+};
+  \node [] at ($ (mm.east) + (7.7,0) $) {+};
+  \node [] at ($ (tm.east) + (7.7,0) $) {+};
+
+  \node [] at ($ (bm.east) + (8.7,0) $) {=};
+  \node [] at ($ (mm.east) + (8.7,0) $) {=};
+  \node [] at ($ (tm.east) + (8.7,0) $) {=};
+
+\end{tikzpicture}

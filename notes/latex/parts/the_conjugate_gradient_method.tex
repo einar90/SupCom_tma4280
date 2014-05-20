@@ -1,0 +1,141 @@
+% -*- root: ../supcom.tex -*-
+
+\section{The conjugate gradient method} % (fold)
+\label{sec:the_conjugate_gradient_method}
+This section is based on the notes here: \url{http://www.hpcc.unn.ru/mskurs/ENG/DOC/pp09.pdf}.
+
+Let us consider another approach to solving linear equation systems. According to this approach the sequence of the approximate solutions $x_, x_1, \dots, x_k,\dots$ is calculated for approximating the exact solution $x*$ of system $Ax=b$. In addition the computations are performed in such a way that each next approximation gives the estimation of the exact solution with a decreasing error and, as a result, in case of continuous computations the estimation for the exact solution may be obtained with any desired degree of accuracy. Such iterative methods of solving linear equation systems are widely used in the practice of computations. Among advantages of these methods it should be mentioned a smaller amount (in comparison, for instance, to the Gauss method) of the computations necessary for solving the sparse linear equation systems, possibility of faster obtaining the initial approximation of the exact solution, the availability of efficient methods of parallel computations.
+
+The conjugate gradient method is one of the best known iterative algorithms. This method may be used for solving a symmetric positive definite linear equation system of high dimensionality.
+
+Let’s recall that a matrix $A$ is symmetric if it coincides with its transpose, i.e. $A=A^T$ . A matrix $A$ is \emph{positive definite}, if $x^T Ax > 0$ takes place for each vector x.
+
+It is known, that after the execution of $n$ algorithm iterations ($n$ is the order of the linear equation system being solved), the next approximation $x^n$ coincide with the exact solution.
+
+\subsection{Sequential algorithm} % (fold)
+\label{sub:sequential_algorithm}
+
+If matrix $A$ is symmetric and positive definite, then the function
+\begin{equation}
+  q(x) = \frac{1}{2} x^T A x - x^T b + c
+\end{equation}
+has a single minimizer at point $x*$, which coincides with the solution of the linear equation system $Ax=b$. The conjugate gradient method is one from wide group of iterative algorithms, which allow to find the solution $Ax=b$ by means of minimizing function $q(x)$.
+
+The iteration of conjugate gradient method consists in computing the next approximation to the exact solution
+in accordance to the following rule:
+\begin{equation}
+  x^k = x^{k-1} + s^k d^k
+\end{equation}
+i.e. the new value of approximation $x^k$ is computed with regard to the approximation obtained at the pervious step $x^{k-1}$, a scalar step $s^k$ and a direction vector $d^k$.
+
+Before the execution of the first iteration the vectors $x^0$ and $d^0$ are assumed to be equal to zero and the value  $-b$ is assigned to vector $g^0$ . Then at each iteration the computation of the next approximation value $x^k$ includes the execution of the following four steps:
+\begin{description}
+  \item[Step 1:]  Compute the gradient:
+    \begin{equation}
+      g^k = Ax^{k-1}-b
+    \end{equation}
+  \item[Step 2:] Compute the direction vector:
+    \begin{equation}
+      d^k = -g^k + \frac{(g^k)^T, g^k}{(g^{k-1})^T, g^{k-1}}d^{k-1}
+    \end{equation}
+  \item[Step 3:] Compute the step value:
+    \begin{equation}
+      s^k = \frac{d^k, g^k}{(d^k)^T A d^k}
+    \end{equation}
+  \item[Step 4:] Compute the new approximation:
+    \begin{equation}
+      x^k := x^{k-1} + s^k d^k
+    \end{equation}
+\end{description}
+
+As it can be noted, these expressions include two operations of matrix-vector multiplication, four operations of inner product and five vector operations. As a result, the total number of operations executed at each iteration is the following:
+\begin{equation}
+  t_1 = 2n^2 + 13n
+\end{equation}
+
+As it has been previously mentioned, to to obtain the exact solution for linear equation system with a symmetric positive definite matrix, it is necessary to perform n iterations. Thus, to solve the system it is necessary to perform
+\begin{equation}
+  T_1 = nt_1 = 2n^3 + 13n^2
+\end{equation}
+operations, so the algorithm complexity is the order $O(n^3)$.
+
+\subsubsection{Example} % (fold)
+\label{ssub:example}
+
+Let’s demonstrate te conjugate gradient method by solving the following system of linear equations:
+\begin{align}
+    3x_0 &- x_1 &= 3  \nonumber\\
+    -x_0 &+ x_1 &= 7   \nonumber
+\end{align}
+
+The matrix of this system is symmetric positive definite and, the conjugate gradient method may be applied. As it was previously mentioned, for finding the exact decision of this system it is required to execute only two iterations of a method.
+
+On the first iteration it was computed that the gradient $g^1 = (-3,-7)$, the direction vector $d^1 = (3, 7)$, the step size $s^1 =0.439$. Accordingly, the next approximation of the exact solution is $x^1 = (1.318, 3.076)$.
+
+On the second iteration it was computed that the gradient $g^2 = (-2.121, 0.909)$, the direction vector $d^2 = (2.397,- 0.266)$ and the step size $s^2 =0.284$. The next approximation is $x^2 = (2, 3)$ and it coincides with the exact solution of the system.
+% subsubsection example (end)
+% subsection sequential_algorithm (end)
+
+\subsection{Parallel algorithm} % (fold)
+\label{sub:parallel_algorithm}
+In the course of development of the parallel conjugate gradient method for solving a linear equation system, it is first of all necessary to take into account the fact that method iterations are executed sequentially. So the most reasonable approach is to parallelize the computations performed in the course of iteration execution.
+
+The analysis of the relations above shows that the main computations performed in accordance with the method consist in multiplying the matrix $A$ by the vectors $x$ and $d$. As a result, all the results of the section on matrix-vector multiplication may be used in developing parallel computations.
+
+Additional computations of lower complexity order, are vearious vector computational operations (inner product, summations and subtraction, multiplication by a scalar). The implementation of such computations should be, of course, matched with the selected parallel method of executing the operations of matrix-vector multiplication. The general recomendaions may be the following: if vectors are of small sizes, it is possible to duplicate the vectors among the processors; if the linear system being solved is of great order, then the vector block decomposition is more efficient.
+
+\subsubsection{Efficiency analysis} % (fold)
+\label{ssub:efficienct_analysis}
+To analyze the efficiency of parallel computations let us choose the parallel algorithm of matrix-vector multiplication in case of the rowwise block-striped matrix partitioning and the duplication approach of all the processed vectors.
+
+As mentioned, the time complexity for the sequential conjugate gradient method is
+\[
+  T_1 = 2n^3 + 13n^2
+\]
+
+Let us determine the execution time for the parallel implementation of this method. The computational
+complexity of parallel matrix-vector multiplication operations in case of the rowwise block-striped matrix
+decomposition is the following:
+\begin{equation}
+  T_p^m (calc) = \frac{n}{p} (2n-1)
+\end{equation}
+
+As a result, if all the computations on the vectors are duplicated, the total computational complexity for the parallel variant of the method is the following:
+\begin{equation}
+  T_p (calc) = n(2T_p^m + 13V) = n \left( 2\frac{n}{p} (2n-1) + 13n \right)
+\end{equation}
+Where $V$ denotes vector operations.
+
+Taking into account the obtained estimations, we may express the speedup and efficiency using the following
+relations:
+\begin{equation}
+  S_p = \frac{2n^{3}+13n^{2}}{n\left(2\frac{n}{p}(2n-1)+13n\right)},\quad E_{p}=\frac{2n^{3}+13n^{2}}{p\cdot n\left(2\frac{n}{p}(2n-1)+13n\right)}
+\end{equation}
+
+The analysis of these expressions shows that computational load balancing among the processor is approximately uniform.
+
+Let us specify the expressions used in the subsection. We will take into account the duration of the computational operations performed and estimate the time complexity of the data communications among the processors. As it can be noted, the information communications are appeared only in case of matrix-vector multiplication. With regard to the results from the section on matrix-vector multiplication, we may consider the communication complexity of the parallel computations to be equal to the $2$ (number of matrix-vector operations) times $n$ (number of iterations required) times the time communication time for the parallel matrix-vector multiplication:
+\begin{equation}
+  T_p(comm)  = 2n (\tau_S \log_2 p + w \frac{n}{p} (p-1)\gamma)
+\end{equation}
+
+In its final form the exection time for the parallel variant of the conjugate gradient method for solving linear equation systems looks as follows:
+
+\begin{equation}
+  T_p = n \left[  \left( 2\frac{n}{p} (2n-1) + 13n \right) \tau_F + 2 (\tau_S \log_2 p + w \frac{n}{p} (p-1)\gamma) \right]
+\end{equation}
+
+
+
+
+
+% subsubsection efficienct_analysis (end)
+
+
+
+
+% subsection parallel_algorithm (end)
+
+
+
+% section the_conjugate_gradient_method (end)
